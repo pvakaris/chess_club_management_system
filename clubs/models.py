@@ -43,6 +43,18 @@ class Applicant(models.Model):
 
         ordering = ['-created_at']
 
+class Officer:
+    user_type = Users.OFFICER
+    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+
+class Member:
+    user_type = Users.MEMBER
+    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+
+class ClubOwner:
+    user_type = Users.CLUB_OWNER
+    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+
 
 
 
