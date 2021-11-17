@@ -5,9 +5,9 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
 
-class User(models.Model):    
-    """Applicants in their club."""
-
+# class User(models.Model):
+class User(AbstractUser):   
+    """User in a club."""
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
@@ -15,6 +15,12 @@ class User(models.Model):
     chess_experience = models.IntegerField(blank=False)
     personal_statement = models.CharField(max_length=10000, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'bio', 'chess_experience', 'personal_statement']
+
+    def __str__(self):
+        return self.email
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -35,15 +41,11 @@ class User(models.Model):
 
 
 class Club(models.Model):
+    """A new club."""
     club_name = models.CharField(max_length=50, blank=False, unique=True)
 
-class Member(models.Model):
+class Member(models.Model): 
+    """Member from a certain club with a user type (applicant, officer, etc.)"""
     user_type = models.IntegerField(choices=UserTypes.choices(), default=UserTypes.APPLICANT)
     current_user = models.ForeignKey(User, on_delete=models.CASCADE)
     club_membership = models.ForeignKey(Club, on_delete=models.CASCADE)
-
-
-
-
-
-# Create your models here.
