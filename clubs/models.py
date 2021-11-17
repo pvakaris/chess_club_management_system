@@ -1,24 +1,15 @@
 from django.db import models
-from .users import Users
+from .user_types import UserTypes
 
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
 
-class Applicant(models.Model):
+class User(models.Model):    
     """Applicants in their club."""
 
-    user_type = Users.APPLICANT
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
-    username = models.CharField(
-        max_length=30,
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^@\w{3,}$',
-            message='Username must consist of @ followed by at least three alphanumericals'
-        )]
-    )
     email = models.EmailField(unique=True, blank=False)
     bio = models.CharField(max_length=520, blank=True)
     chess_experience = models.IntegerField(blank=False)
@@ -40,21 +31,16 @@ class Applicant(models.Model):
     
     class Meta:
         """Model options."""
-
         ordering = ['-created_at']
 
-class Officer:
-    user_type = Users.OFFICER
-    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
 
-class Member:
-    user_type = Users.MEMBER
-    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+class Club(models.Model):
+    club_name = models.CharField(max_length=50, blank=False, unique=True)
 
-class ClubOwner:
-    user_type = Users.CLUB_OWNER
-    user = models.ForeignKey(Applicant, on_delete=models.CASCADE)
-
+class Member(models.Model):
+    user_type = models.IntegerField(choices=UserTypes.choices(), default=UserTypes.APPLICANT)
+    current_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club_membership = models.ForeignKey(Club, on_delete=models.CASCADE)
 
 
 
