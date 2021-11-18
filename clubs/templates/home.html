@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body %}
+  {% include 'partials/navbar.html' %}
+  <div class="container vh-100">
+    <div class="row h-100">
+      <div class="col-12 my-auto">
+        <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7 rounded">
+          <div class="card-body">
+            <h1 class="cover-heading">King's Chess</h1>
+            <p class="cover-text">Welcome to the world of chess</p>
+            <p>
+              <button type="button" class="btn btn-outline-secondary btn-sm">Log in</button>
+              <a href="#" class="link-primary">Not a member yet? Apply.</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
