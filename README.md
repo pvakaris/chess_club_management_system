@@ -7,7 +7,6 @@ The members of the team are:
 - Anna Lenkovska
 - Chang Chen
 - Ojebo Adoh
-*Add any further information about the team here, such as absent team members.*
 
 ## Project structure
 The project is called `system`.  It currently consists of a single app `clubs`.
