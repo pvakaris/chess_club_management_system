@@ -1,33 +1,38 @@
 {% extends 'base.html' %}
 {% block body %}
-  {% include 'partials/navbar.html' %}
-  <div class="container vh-100">
-    <div class="row h-100">
-      <div class="col-12 my-auto">
-        <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7 rounded">
-          <div class="card-body">
-            <h1 class="cover-heading">Dingo Chess</h1>
-            <p class="cover-text">Welcome to the world of chess</p>
-              <form>
-                <div class="form-group">
-                  <label for="exampleInputEmail1">Email address</label>
-                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-                </div>
-                <div class="form-group">
-                  <label for="exampleInputPassword1">Password</label>
-                  <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                </div>
-                <div class="d-grid mt-3">
-                  <div class="text-center gap-2">
-                    <button type="submit" class="btn px-4 btn-primary btn-sm">Log-in</button>
+{% include 'partials/navbar.html' %}
+  <div style="background-image: url('../../static/images/home.jpg');-webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: 100% 100%;
+  -o-background-size: cover;">
+    <div class="container vh-100">
+      <div class="row h-100">
+        <div class="col-12 my-auto">
+          <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7 rounded">
+            <div class="card-body">
+              <h1 class="cover-heading">Dingo Chess</h1>
+              <p class="cover-text">Welcome to the world of chess</p>
+                <form>
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
                   </div>
-                  <a href="#" class="label link-primary">Not a member yet? Apply.</a>
-                </div>
-              </form>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                  </div>
+                  <div class="d-grid mt-3">
+                    <div class="text-center gap-2">
+                      <button type="submit" class="btn px-4 btn-primary btn-sm">Log-in</button>
+                    </div>
+                    <a href="#" class="label link-primary">Not a member yet? Apply.</a>
+                  </div>
+                </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+</div>
 
 {% endblock %}
