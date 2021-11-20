@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
 
 # class User(models.Model):
-class User(AbstractUser):   
+class User(AbstractUser):
     """User in a club."""
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
@@ -24,7 +24,7 @@ class User(AbstractUser):
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
-    
+
     def gravatar(self, size=120):
         """Return a URL to the user's gravatar."""
         gravatar_object = Gravatar(self.email)
@@ -34,18 +34,37 @@ class User(AbstractUser):
     def mini_gravatar(self):
         """Return a URL to a miniature version of the user's gravatar."""
         return self.gravatar(size=60)
-    
+
     class Meta:
         """Model options."""
         ordering = ['-created_at']
 
+class ClubManager(models.Manager):
+    """Club manager allows for initialisation of club object with club name"""
+    def create_club(self, club_name):
+        club = self.create(club_name=club_name)
+        return club
 
 class Club(models.Model):
     """A new club."""
-    club_name = models.CharField(max_length=50, blank=False, unique=True)
+    club_name = models.CharField(max_length=50, blank=False, unique=True, default='default')
 
-class Member(models.Model): 
+    objects = ClubManager()
+
+class MemberManager(models.Manager):
+    """Member manager allows for initialisation of member object with the following parameteres"""
+    def create_member(self, user_type, current_user, club_membership):
+        member = self.create(
+            user_type=user_type,
+            current_user=current_user,
+            club_membership=club_membership
+        )
+        return member
+
+class Member(models.Model):
     """Member from a certain club with a user type (applicant, officer, etc.)"""
     user_type = models.IntegerField(choices=UserTypes.choices(), default=UserTypes.APPLICANT)
     current_user = models.ForeignKey(User, on_delete=models.CASCADE)
     club_membership = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    objects = MemberManager()

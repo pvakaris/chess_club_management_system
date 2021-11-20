@@ -13,12 +13,19 @@ class UserModelTestCase(TestCase):
             first_name = 'John',
             last_name = 'Doe',
             email = 'johndoe@example.org',
+            username = 'johndoe@example.org',
             bio = 'This is a bio',
             chess_experience = True,
             personal_statement = 'This is a statement'
         )
-        self.club = new Club
-        self.club
+        self.club = Club.objects.create_club(
+            club_name = 'Club1'
+        )
+        self.member = Member.objects.create_member(
+            user_type = 4,
+            current_user = self.user,
+            club_membership = self.club
+        )
 
     """The first test to prevent the base Applicant from being invalid"""
     def test_valid_applicant(self):
