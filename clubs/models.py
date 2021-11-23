@@ -7,17 +7,14 @@ from libgravatar import Gravatar
 
 # class User(models.Model):
 class User(AbstractUser):   
-    """User in a club."""
+    """User in a club.""" 
+    username = models.EmailField(unique=True, blank=False)
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
-    email = models.EmailField(unique=True, blank=False)
     bio = models.CharField(max_length=520, blank=True)
     chess_experience = models.IntegerField(blank=False)
     personal_statement = models.CharField(max_length=10000, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'bio', 'chess_experience', 'personal_statement']
 
     def __str__(self):
         return self.email

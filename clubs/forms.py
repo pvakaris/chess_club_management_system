@@ -6,7 +6,7 @@ from .models import User, Club, Member
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
-    email = forms.CharField(label="email")
+    username = forms.CharField(label="email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 
@@ -15,8 +15,8 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         """Form options."""
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio', 'chess_experience', 'personal_statement']
-        widgets = { 'bio': forms.Textarea(), 'personal_statement': forms.Textarea(), }
+        fields = ['first_name', 'last_name', 'username', 'bio', 'chess_experience', 'personal_statement']
+        widgets = { 'bio': forms.Textarea(), 'personal_statement': forms.Textarea() }
 
     new_password = forms.CharField(
         label='Password',
@@ -42,10 +42,9 @@ class ApplicationForm(forms.ModelForm):
         """Create a new user."""
         super().save(commit=False)
         user = User.objects.create_user(
-            self.cleaned_data.get('email'), 
+            self.cleaned_data.get('username'), 
             first_name=self.cleaned_data.get('first_name'),
             last_name=self.cleaned_data.get('last_name'),
-            # email=self.cleaned_data.get('email'), #? we might need to change this 
             bio=self.cleaned_data.get('bio'),
             chess_experience=self.cleaned_data.get('chess_experience'),
             personal_statement=self.cleaned_data.get('personal_statement'),
