@@ -39,10 +39,14 @@ class User(AbstractUser):
 
 class Club(models.Model):
     """A new club."""
-    club_name = models.CharField(max_length=50, blank=False, unique=True)
+    name = models.CharField(max_length=50, blank=False, unique=True)
+    location = models.CharField(max_length=50, blank=True)
+    description = models.CharField(max_length=500, blank=True)
+
 
 class Member(models.Model): 
     """Member from a certain club with a user type (applicant, officer, etc.)"""
     user_type = models.IntegerField(choices=UserTypes.choices(), default=UserTypes.APPLICANT)
     current_user = models.ForeignKey(User, on_delete=models.CASCADE)
     club_membership = models.ForeignKey(Club, on_delete=models.CASCADE)
+
