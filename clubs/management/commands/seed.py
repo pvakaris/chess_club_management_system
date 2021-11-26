@@ -101,7 +101,7 @@ class Command(BaseCommand):
         )
 
     def _email(self, first_name, last_name):
-        email = f'{first_name}.{last_name}@example.org'
+        email = f'{first_name.lower()}.{last_name.lower()}@example.org'
         return email
 
     def _username(self, first_name, last_name):
