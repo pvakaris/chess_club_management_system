@@ -5,13 +5,12 @@
     <div class="col-12">
       <h1>Users</h1>
       <table class="table">
-        {% for user in users %}
+        {% for member in members %}
           <tr>
             <td>
-              <img src="{{ user.mini_gravatar }}" alt="Gravatar of {{ user.username }}" class="rounded-circle" >
+              <img src="{{ member.current_user.mini_gravatar }}" alt="Gravatar of {{ member.current_user.username }}" class="rounded-circle" >
             </td>
-            <td>{{ user.full_name }}</td>
-            <td><a href="{% url 'show_user' user.id %}">{{ user.username }}</a></td>
+            <td><a href="{% url 'show_user' member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
           </tr>
         {% endfor %}
       </table>

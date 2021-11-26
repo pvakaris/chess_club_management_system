@@ -10,8 +10,10 @@ def home(request):
     return render(request, 'home.html')
 
 def user_list(request):
-    users = User.objects.all()
-    return render(request, 'user_list.html', {'users': users})
+    # users = User.objects.values('id')
+    members = Member.objects.filter(user_type=3)
+    # return render(request, 'user_list.html', {'users': users})
+    return render(request, 'user_list.html', {'members': members})
 
 def show_user(request, user_id):
     try:
