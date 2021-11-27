@@ -20,4 +20,14 @@ from clubs import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('feed/', views.feed, name='feed'),
+    path('new_post/', views.new_post, name='new_post'),
+    path('follow_toggle/<int:user_id>', views.follow_toggle, name='follow_toggle'),
+    path('Apply/', views.Apply, name='Apply'),
+    path('users/', views.user_list, name='user_list'),
+    path('log_in/', views.log_in, name='log_in'),
+    path('log_out/', views.log_out, name='log_out'),
+    path('password/', views.password, name='password'),
+    path('profile/', views.profile, name='profile'),
+    path('user/<int:user_id>', views.show_user, name='show_user'),
 ]

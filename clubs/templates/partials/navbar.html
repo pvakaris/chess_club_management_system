@@ -7,6 +7,11 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    {% include 'partials/menu.html' %}
+    {% if user.is_authenticated %}
+      {% include 'partials/menu.html' %}
+    {% endif %}
+  </div>
   </div>
 </nav>
+
+
