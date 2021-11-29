@@ -62,14 +62,35 @@ class MemberModelTestcase(TestCase):
     def test_user_type_may_already_exist(self):
         second_user = self._create_second_user()
         second_club = self._create_second_club()
-        second_membership = self._create_second_member(second_user)
+        second_membership = self._create_second_member(second_user, second_club)
         self.member.user_type = second_membership.user_type
         self._assert_membership_is_valid()
 
     """Current user tests"""
 
+    def test_current_user_may_not_be_null(self):
+        self.member.current_user = None
+        self._assert_membership_is_invalid()
+
     def test_current_user_may_already_have_another_membership(self):
-        pass
+        second_club = self._create_second_club()
+        second_membership = self._create_second_member(self.user, second_club)
+        self._assert_membership_is_valid()
+
+    def test_current_user_cannot_be_a_member_of_same_club_twice(self):
+        second_membership = self._create_second_member(self.user, self.club)
+        self._assert_membership_is_invalid()
+
+    """Club membership tests"""
+
+    def test_club_membership_may_be_the_same_for_different_users(self):
+        second_user = self._create_second_user()
+        second_membership = self._create_second_member(second_user, self.club)
+        self._assert_membership_is_valid()
+
+    def test_club_membership_cannot_be_null(self):
+        self.member.club_membership = None
+        self._assert_membership_is_invalid()
 
     """Extra functions"""
 

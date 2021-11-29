@@ -49,3 +49,7 @@ class Member(models.Model):
     user_type = models.IntegerField(choices=UserTypes.choices(), default=UserTypes.APPLICANT)
     current_user = models.ForeignKey(User, on_delete=models.CASCADE)
     club_membership = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    class Meta:
+        """Model options."""
+        unique_together = ('current_user', 'club_membership',)
