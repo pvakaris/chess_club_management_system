@@ -24,7 +24,12 @@ class LogInTestCase(TestCase):
         password_widget = form.fields['password'].widget
         self.assertTrue(isinstance(password_widget, forms.PasswordInput))
 
-    def test_form_rejects_blank_username(self):
+    def test_form_rejects_none_email(self):
+        self.form_input['username'] = 'janedoe'
+        form = LogInForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
+    def test_form_rejects_blank_email(self):
         self.form_input['username'] = ''
         form = LogInForm(data=self.form_input)
         self.assertFalse(form.is_valid())
@@ -34,7 +39,7 @@ class LogInTestCase(TestCase):
         form = LogInForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
-    def test_form_accepts_incorrect_username(self):
+    def test_form_accepts_incorrect_email(self):
         self.form_input['username'] = 'janedoe@example.org'
         form = LogInForm(data=self.form_input)
         self.assertTrue(form.is_valid())
