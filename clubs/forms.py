@@ -6,7 +6,7 @@ from .models import User, Club, Member
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
-    username = forms.CharField(label="email")
+    username = forms.EmailField(label="email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 
