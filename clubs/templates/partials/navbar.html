@@ -1,12 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container">
-    &emsp; &emsp;
-    <a class="navbar-brand navbar-nav" href="{% url 'home' %}">
-      <i class='fas fa-chess-knight' style='font-size:28px'></i> &emsp13; Dingo Chess
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <span class='fas fa-chess-knight' style='font-size:28px'></span> &emsp13; Dingo Chess
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    {% include 'partials/menu.html' %}
+    {% if user.is_authenticated %}
+      {% include 'partials/menu.html' %}
+    {% endif %}
   </div>
 </nav>
