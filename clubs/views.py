@@ -44,7 +44,6 @@ def apply(request):
     else:
         form = ApplicationForm()
     return render(request, 'application_form.html', {'form': form})
-<<<<<<< HEAD
 
 def edit_profile(request):
     current_user = request.user
@@ -59,16 +58,6 @@ def edit_profile(request):
         form = UserForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form})
 
-def show_user(request, user_id):
-
-    try:
-        user = User.objects.get(id=user_id)
-    except ObjectDoesNotExist:
-        return redirect('feed')
-    else:
-        return render(request, 'show_user.html', {'user': user})
-=======
-
 def user_list(request):
     members = Member.objects.filter(user_type=3)
     return render(request, 'user_list.html', {'members': members})
@@ -80,5 +69,3 @@ def show_user(request, user_id):
         return redirect('user_list')
     else:
         return render(request, 'show_user.html', {'user': user})
-
->>>>>>> 6fedc83d4a3b9133167375bd733140cf604b6b1e
