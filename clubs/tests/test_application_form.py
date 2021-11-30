@@ -3,6 +3,7 @@ from django import forms
 from clubs.models import User
 from clubs.forms import ApplicationForm
 from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import check_password
 
 class SignUpTestCase(TestCase):
 
@@ -66,3 +67,18 @@ class SignUpTestCase(TestCase):
         self.form_input['password_confirmation'] = 'wrongpassword'
         form = ApplicationForm(data=self.form_input)
         self.assertFalse(form.is_valid())
+
+    def test_form_must_save_correctly(self):
+        form = ApplicationForm(data=self.form_input)
+        before_count = User.objects.count()
+        form.save()
+        after_count = User.objects.count()
+        self.assertEqual(before_count+1, after_count)
+        user = User.objects.get(username='johndoe@example.org')
+        self.assertEqual(user.first_name, 'John')
+        self.assertEqual(user.last_name, 'Doe')
+        self.assertEqual(user.bio, 'This is a bio')
+        self.assertEqual(user.chess_experience, 300)
+        self.assertEqual(user.personal_statement, 'This is a statement')
+        is_password_true = check_password('Password123', user.password)
+        self.assertTrue(is_password_true)
