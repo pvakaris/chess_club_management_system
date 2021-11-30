@@ -44,10 +44,8 @@ def apply(request):
         form = ApplicationForm()
     return render(request, 'application_form.html', {'form': form})
   
-  def user_list(request):
-    # users = User.objects.values('id')
+def user_list(request):
     members = Member.objects.filter(user_type=3)
-    # return render(request, 'user_list.html', {'users': users})
     return render(request, 'user_list.html', {'members': members})
 
 def show_user(request, user_id):
