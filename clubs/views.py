@@ -1,7 +1,13 @@
+
+from django.shortcuts import render, redirect
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, render
+from .models import User, Member, Club
 from .forms import LogInForm, ApplicationForm
+
 
 def home(request):
     return render(request, 'home.html')
@@ -37,3 +43,16 @@ def apply(request):
     else:
         form = ApplicationForm()
     return render(request, 'application_form.html', {'form': form})
+  
+def user_list(request):
+    members = Member.objects.filter(user_type=3)
+    return render(request, 'user_list.html', {'members': members})
+
+def show_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except ObjectDoesNotExist:
+        return redirect('user_list')
+    else:
+        return render(request, 'show_user.html', {'user': user})
+
