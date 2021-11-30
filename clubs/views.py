@@ -2,49 +2,57 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, ApplicationForm, UserForm
+from .forms import LogInForm, SignUpForm, UserForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
+from .helpers import login_prohibited
 
+@login_prohibited
 def home(request):
-    return render(request, 'home.html')
+    form = LogInForm()
+    return render(request, 'home.html', {'form': form})
 
+@login_required
 def feed(request):
     return render(request, 'feed.html')
 
+@login_prohibited
 def log_in(request):
-    if request.method == 'POST':
-        form = LogInForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('feed')
-        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+    form = LogInForm(request.POST)
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('feed')
+    messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
+    return render(request, 'home.html', {'form': form})
 
+@login_required
 def log_out(request):
     logout(request)
     return redirect('home')
 
-def apply(request):
+@login_prohibited
+def sign_up(request):
     if request.method == 'POST':
-        form = ApplicationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('feed')
     else:
-        form = ApplicationForm()
-    return render(request, 'application_form.html', {'form': form})
+        form = SignUpForm()
+    return render(request, 'sign_up.html', {'form': form})
 
+@login_required
 def edit_profile(request):
     current_user = request.user
 
@@ -58,10 +66,12 @@ def edit_profile(request):
         form = UserForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form})
 
+@login_required
 def user_list(request):
     members = Member.objects.filter(user_type=3)
     return render(request, 'user_list.html', {'members': members})
 
+@login_required
 def show_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)

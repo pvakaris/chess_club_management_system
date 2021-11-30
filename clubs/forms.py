@@ -6,11 +6,11 @@ from .models import User, Club, Member
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
-    username = forms.EmailField(label="email")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+    username = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={'placeholder': 'Enter email'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
 
 
-class ApplicationForm(forms.ModelForm):
+class SignUpForm(forms.ModelForm):
     """Form enabling unregistered users to sign up."""
     class Meta:
         """Form options."""

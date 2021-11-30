@@ -11,18 +11,17 @@
             <div class="card-body">
               <h1 class="cover-heading">Dingo Chess</h1>
               <p class="cover-text">Welcome to the world of chess</p>
-                <p>
-                        <a href="{% url 'log_in' %}" class="btn btn-lg btn-secondary">
-                          Log in
-                        </a>
-                      </p>
-                      <p>
-                        <a href="{% url 'application_form' %}" class="btn btn-lg btn-secondary">
-                          Not a member yet? Apply
-                        </a>
-                      </p>
+              <form action="{% url 'log_in' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% include 'partials/bootstrap_form.html' with form=form %}
+                <div class="d-grid mt-3">
+                  <div class="text-center gap-2">
+                    <input type="submit" value="Log in" class="btn px-4 btn-primary btn-sm">
                   </div>
-                </form>
+                  <a href="{% url 'sign_up' %}" class="label link-primary pt-1">Not a user yet? Sign up!</a>
+                </div>
+              </form>
             </div>
           </div>
         </div>
