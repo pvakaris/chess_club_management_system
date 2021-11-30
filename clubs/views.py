@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, SignUpForm, UserForm
+from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited
@@ -79,3 +79,16 @@ def show_user(request, user_id):
         return redirect('user_list')
     else:
         return render(request, 'show_user.html', {'user': user})
+
+@login_required
+def apply(request):
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            # create_an_application_instance
+            # give a message
+            # then
+            return redirect('feed')
+    else:
+        form = ApplicationForm()
+    return render(request, 'apply.html', {'form': form})
