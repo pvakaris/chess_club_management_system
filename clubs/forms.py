@@ -42,7 +42,7 @@ class ApplicationForm(forms.ModelForm):
         """Create a new user."""
         super().save(commit=False)
         user = User.objects.create_user(
-            self.cleaned_data.get('username'), 
+            self.cleaned_data.get('username'),
             first_name=self.cleaned_data.get('first_name'),
             last_name=self.cleaned_data.get('last_name'),
             bio=self.cleaned_data.get('bio'),
@@ -51,3 +51,13 @@ class ApplicationForm(forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
+
+class UserForm(forms.ModelForm):
+    """Form to update user profiles."""
+
+    class Meta:
+        """Form options."""
+
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'bio', 'chess_experience', 'personal_statement']
+        widgets = { 'bio': forms.Textarea(), 'personal_statement': forms.Textarea() }
