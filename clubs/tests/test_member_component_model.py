@@ -10,7 +10,7 @@ class MemberModelTestcase(TestCase):
             username='johndoe@example.org',
             first_name='John',
             last_name='Doe',
-            password='password123',
+            password='Password123',
             bio='The quick brown fox jumps over the lazy dog.',
             personal_statement='hhhh',
             chess_experience=101,

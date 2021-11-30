@@ -6,7 +6,7 @@ from .models import User, Club, Member
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
-    username = forms.CharField(label="email")
+    username = forms.EmailField(label="email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 
@@ -42,7 +42,7 @@ class ApplicationForm(forms.ModelForm):
         """Create a new user."""
         super().save(commit=False)
         user = User.objects.create_user(
-            self.cleaned_data.get('username'), 
+            self.cleaned_data.get('username'),
             first_name=self.cleaned_data.get('first_name'),
             last_name=self.cleaned_data.get('last_name'),
             bio=self.cleaned_data.get('bio'),
