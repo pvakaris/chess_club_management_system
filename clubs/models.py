@@ -64,6 +64,7 @@ class Member(models.Model):
             models.UniqueConstraint(fields=['club_membership'], condition=Q(user_type=UserTypes.CLUB_OWNER), name="there can't exist more than one club owner")
         ]
 
+
     def acceptApplicant(self, user):
         """Converts an applicant to a member"""
         user.user_type = UserTypes.MEMBER

@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited
 from .user_types import UserTypes
+from django.http import HttpResponseForbidden, Http404
+
 
 @login_prohibited
 def home(request):
@@ -95,6 +97,28 @@ def apply(request):
     return render(request, 'apply.html', {'form': form})
 
 
+
+# @login_required
+# def create_club(request):
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             current_user = request.user
+#             form = ClubForm(request.POST)
+#             if form.is_valid():
+#                 club = form.save()
+#                 Member.objects.create(
+#                         user_type=UserTypes.CLUB_OWNER,
+#                         current_user=current_user,
+#                         club_membership=club
+#                     )
+#                 return redirect('feed')
+#             else:
+#                 return render(request, 'create_club.html', {'form': form})
+#         else:
+#             return redirect('home')
+#     else:
+#         return HttpResponseForbidden()
+
 @login_required
 def create_club(request):
     current_user = request.user
@@ -110,5 +134,5 @@ def create_club(request):
             return redirect('feed')
     else:
         form = ClubForm()
-    return render(request, 'create_club.html', {'form': form})    
+    return render(request, 'create_club.html', {'form': form})  
 

@@ -4,10 +4,10 @@
   <div class="row">
     <div class="col-12">
       <h1>Create Club</h1>
-      <form action="{% url 'sign_up' %}" method="post">
+      <form action="{% url 'create_club' %}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Sign up" class="btn btn-primary">
+        <input type="submit" value="Create Club" class="btn btn-primary">
       </form>
     </div>
   </div>

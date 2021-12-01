@@ -92,3 +92,5 @@ class ClubForm(forms.ModelForm):
             description=self.cleaned_data.get('description'),
         )
         return club
+
+    
