@@ -1,9 +1,11 @@
-
+"""Views of the chess club app"""
+from logging import exception
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
@@ -12,7 +14,12 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited
 from .user_types import UserTypes
-from django.http import HttpResponseForbidden, Http404
+from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from system.settings import REDIRECT_URL_WHEN_LOGGED_IN
+from django.views import View
+from django.urls import reverse
+
 
 
 @login_prohibited
@@ -97,42 +104,20 @@ def apply(request):
     return render(request, 'apply.html', {'form': form})
 
 
-
-# @login_required
-# def create_club(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             current_user = request.user
-#             form = ClubForm(request.POST)
-#             if form.is_valid():
-#                 club = form.save()
-#                 Member.objects.create(
-#                         user_type=UserTypes.CLUB_OWNER,
-#                         current_user=current_user,
-#                         club_membership=club
-#                     )
-#                 return redirect('feed')
-#             else:
-#                 return render(request, 'create_club.html', {'form': form})
-#         else:
-#             return redirect('home')
-#     else:
-#         return HttpResponseForbidden()
-
-@login_required
 def create_club(request):
-    current_user = request.user
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        current_usr = request.user
         form = ClubForm(request.POST)
         if form.is_valid():
             club = form.save()
             Member.objects.create(
-                    user_type=UserTypes.CLUB_OWNER,
-                    current_user=current_user,
-                    club_membership=club
-                )
+                user_type=UserTypes.CLUB_OWNER,
+                current_user=current_usr,
+                club_membership=club
+            )
             return redirect('feed')
+        else:
+            return render(request, 'create_club.html', {'form': form})
     else:
-        form = ClubForm()
-    return render(request, 'create_club.html', {'form': form})  
+        return HttpResponseRedirect(reverse('home'))
 

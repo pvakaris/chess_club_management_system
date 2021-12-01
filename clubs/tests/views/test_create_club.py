@@ -8,8 +8,6 @@ from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
 from clubs.tests.helpers import LogInTester
 
-
-
 class CreateClubTestCase(TestCase):
     """Tests of the create club view"""
 
@@ -31,25 +29,19 @@ class CreateClubTestCase(TestCase):
             chess_experience=101,
             is_active=True,
         )
-        self.other_user = User.objects.create_user(
-            username='janedoe@example.org',
-            first_name='Jane',
-            last_name='Doe',
-            password='Password123',
-            bio='The quick brown fox jumps over the lazy dog.',
-            personal_statement='hhhh',
-            chess_experience=101,
-            is_active=True,
-        )
 
     def test_create_club_url(self):
         self.assertEqual(self.url, '/create_club/')
-    
-    def test_get_create_club_is_forbidden(self): #? needed
-        pass
 
     def test_create_club_redirects_when_not_logged_in(self): #! later stage
-        pass
+        user_count_before = Club.objects.count()
+        redirect_url = reverse('home')
+        response = self.client.post(self.url, self.club, follow=True)
+        self.assertRedirects(response, redirect_url,
+            status_code=302, target_status_code=200, fetch_redirect_response=True
+        )
+        user_count_after = Club.objects.count()
+        self.assertEqual(user_count_after, user_count_before)
 
     def test_successfull_create_club(self):
         self.client.login(username=self.user.username, password="Password123")
@@ -99,7 +91,4 @@ class CreateClubTestCase(TestCase):
         user_count_after = Club.objects.count()
         self.assertEqual(user_count_after, user_count_before)
         self.assertTemplateUsed(response, 'create_club.html')
-
-    def test_cannot_create_two_equal_club_names(self): #? necessary
-        pass
     
