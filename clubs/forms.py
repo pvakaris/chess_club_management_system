@@ -10,7 +10,7 @@ class LogInForm(forms.Form):
     password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
 
 
-class SignUpForm(forms.ModelForm):
+class SignUpForm(forms.ModelForm):  
     """Form enabling unregistered users to sign up."""
     class Meta:
         """Form options."""

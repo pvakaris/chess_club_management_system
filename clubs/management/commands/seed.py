@@ -3,7 +3,7 @@ from faker import Faker
 from clubs.models import Club, User, Member
 from django.db.utils import IntegrityError
 import random
-
+from clubs.user_types import UserTypes
 
 class Command(BaseCommand):
     PASSWORD = "Password123"
@@ -21,6 +21,9 @@ class Command(BaseCommand):
         self.create_clubs()
         self.create_members()
 
+        kerbal = Club.objects.filter(name="Kerbal Chess Club")
+        members = Member.objects.filter(user_type=UserTypes.CLUB_OWNER).count()
+        print(f'there are: {members} club owners')
         print(f'there are: {Club.objects.count()} clubs')
         print(f'there are: {Member.objects.count()} members')
         print('seeding complete')
