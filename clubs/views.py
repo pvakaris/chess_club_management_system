@@ -7,10 +7,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm
+from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm, ClubForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited
+from .user_types import UserTypes
 
 @login_prohibited
 def home(request):
@@ -92,3 +93,22 @@ def apply(request):
     else:
         form = ApplicationForm()
     return render(request, 'apply.html', {'form': form})
+
+
+@login_required
+def create_club(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = ClubForm(request.POST)
+        if form.is_valid():
+            club = form.save()
+            Member.objects.create(
+                    user_type=UserTypes.CLUB_OWNER,
+                    current_user=current_user,
+                    club_membership=club
+                )
+            return redirect('feed')
+    else:
+        form = ClubForm()
+    return render(request, 'create_club.html', {'form': form})    
+

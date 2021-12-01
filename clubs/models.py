@@ -41,8 +41,8 @@ class User(AbstractUser):
 class Club(models.Model):
     """A new club."""
     name = models.CharField(max_length=50, blank=False, unique=True)
-    location = models.CharField(max_length=50, blank=True)
-    description = models.CharField(max_length=500, blank=True)
+    location = models.CharField(max_length=50, blank=False)
+    description = models.CharField(max_length=500, blank=False)
 
 
 class Member(models.Model):
@@ -64,3 +64,19 @@ class Member(models.Model):
             models.UniqueConstraint(fields=['club_membership'], condition=Q(user_type=UserTypes.CLUB_OWNER), name="there can't exist more than one club owner")
         ]
 
+    def acceptApplicant(self, user):
+        """Converts an applicant to a member"""
+        user.user_type = UserTypes.MEMBER
+
+    def promoteMember(self, user):
+        """Converts an member to an officer"""
+        user.user_type = UserTypes.OFFICER
+
+    def transferOwnership(self, officer, club_owner):
+        """Converts an member to an officer"""
+        club_owner.user_type = UserTypes.OFFICER
+        officer.user_type = UserTypes.CLUB_OWNER
+
+    def demoteOfficer(self, user):
+        """Converts an member to an officer"""
+        user.user_type = UserTypes.MEMBER

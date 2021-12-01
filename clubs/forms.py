@@ -2,6 +2,8 @@
 from django import forms
 from django.core.validators import RegexValidator
 from .models import User, Club, Member
+from django.contrib.auth import authenticate
+
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -9,6 +11,14 @@ class LogInForm(forms.Form):
     username = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={'placeholder': 'Enter email'}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
 
+    def get_user(self):
+        """Returns authenticated user if possible"""
+        user = None
+        if self.is_valid():
+            username = self.cleaned_data.get('username')
+            password = self.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+        return user
 
 class SignUpForm(forms.ModelForm):  
     """Form enabling unregistered users to sign up."""
@@ -65,3 +75,20 @@ class UserForm(forms.ModelForm):
 class ApplicationForm(forms.Form):
     clubs = Club.objects.all()
     days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
+
+
+class ClubForm(forms.ModelForm):
+    class Meta:
+        """Form options."""
+        model = Club
+        fields = ['name', 'location', 'description']
+
+    def save(self):
+        """Create new club"""
+        super().save(commit=False)
+        club = Club.objects.create(
+            name=self.cleaned_data.get('name'),
+            location=self.cleaned_data.get('location'),
+            description=self.cleaned_data.get('description'),
+        )
+        return club
