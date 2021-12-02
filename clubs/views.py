@@ -23,6 +23,12 @@ def feed(request):
     members = Member.objects.filter(current_user = user)
     return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
 
+@login_required
+def feed_with_club(request, club_id):
+    user = request.user
+    members = Member.objects.filter(current_user = user)
+    return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
+
 @login_prohibited
 def log_in(request):
     form = LogInForm(request.POST)
