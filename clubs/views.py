@@ -29,7 +29,9 @@ def home(request):
 
 @login_required
 def feed(request):
-    return render(request, 'feed.html')
+    user = request.user
+    members = Member.objects.filter(current_user = user)
+    return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
 
 @login_prohibited
 def log_in(request):
@@ -92,13 +94,22 @@ def show_user(request, user_id):
 
 @login_required
 def apply(request):
+    user = request.user
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
-            # create_an_application_instance
-            # give a message
-            # then
-            return redirect('feed')
+            clubName = form.cleaned_data.get('club')
+            club = Club.objects.get(name = clubName)
+            try:
+                membership = Member.objects.get(current_user=user, club_membership = club)
+            except ObjectDoesNotExist:
+                Member.objects.create(
+                    club_membership = club,
+                    current_user = user,
+                    user_type = 4
+                )
+            finally:
+                return redirect('feed')
     else:
         form = ApplicationForm()
     return render(request, 'apply.html', {'form': form})
