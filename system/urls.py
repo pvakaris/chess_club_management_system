@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from clubs import views
 
 urlpatterns = [
@@ -22,11 +22,14 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('log_in/', views.log_in, name='log_in'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
+    path('edit_club/', views.edit_club, name='edit_club'),
     path('user/<int:user_id>', views.show_user, name='show_user'),
+    path('club/<int:club_id>', views.show_club, name='show_club'),
     path('sign_up/', views.sign_up, name='sign_up'),
     path('log_out/', views.log_out, name='log_out'),
-    path('feed/', views.feed, name='feed'),
-    path('users/', views.user_list, name='user_list'),
+    path('feed/<int:club_id>', views.feed, name='feed'),
+    path('members/', views.MemberListView.as_view(), name='member_list'),
+    path('clubs/', views.ClubListView.as_view(), name='club_list'),
     path('apply/', views.apply, name='apply'),
     path('create_club/', views.create_club, name='create_club'),
 ]

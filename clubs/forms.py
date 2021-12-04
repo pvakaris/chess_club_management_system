@@ -72,6 +72,16 @@ class UserForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'username', 'bio', 'chess_experience', 'personal_statement']
         widgets = { 'bio': forms.Textarea(), 'personal_statement': forms.Textarea() }
 
+class ClubForm(forms.ModelForm):
+    """Form to update club profiles."""
+
+    class Meta:
+        """Form options."""
+
+        model = Club
+        fields = ['name', 'location', 'description']
+        widgets = { 'description': forms.Textarea()}
+
 class ApplicationForm(forms.Form):
     clubs = Club.objects.all()
     days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])

@@ -21,14 +21,18 @@ from django.views import View
 from django.urls import reverse
 
 
+from .helpers import login_prohibited, SelectedClubTracker
+
+selected_club_tracker = SelectedClubTracker.instance()
 
 @login_prohibited
 def home(request):
     form = LogInForm()
     return render(request, 'home.html', {'form': form})
 
+
 @login_required
-def feed(request):
+def feed(request, club_id):
     user = request.user
     members = Member.objects.filter(current_user = user)
     return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
@@ -42,13 +46,14 @@ def log_in(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
     return render(request, 'home.html', {'form': form})
 
 @login_required
 def log_out(request):
+    selected_club_tracker.current_club = 0
     logout(request)
     return redirect('home')
 
@@ -59,7 +64,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
@@ -67,21 +72,33 @@ def sign_up(request):
 @login_required
 def edit_profile(request):
     current_user = request.user
-
     if request.method == 'POST':
         form = UserForm(instance=current_user, data=request.POST)
         if form.is_valid():
             messages.add_message(request, messages.SUCCESS, "Profile updated!")
             form.save()
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     else:
         form = UserForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form})
 
 @login_required
-def user_list(request):
-    members = Member.objects.filter(user_type=3)
-    return render(request, 'user_list.html', {'members': members})
+def edit_club(request):
+    current_club = selected_club_tracker.current_club
+
+    if current_club == 0:
+        return redirect('feed', selected_club_tracker.current_club)
+
+    club = Club.objects.get(id = current_club)
+    if request.method == 'POST':
+        form = ClubForm(instance=club, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Club details updated!")
+            form.save()
+            return redirect('feed', current_club)
+    else:
+        form = ClubForm(instance=club)
+    return render(request, 'edit_club.html', {'form': form})
 
 @login_required
 def show_user(request, user_id):
@@ -91,6 +108,16 @@ def show_user(request, user_id):
         return redirect('user_list')
     else:
         return render(request, 'show_user.html', {'user': user})
+
+@login_required
+def show_club(request, club_id):
+    selected_club_tracker.current_club = club_id
+    try:
+        club = Club.objects.get(id=club_id)
+    except ObjectDoesNotExist:
+        return redirect('club_list')
+    else:
+        return render(request, 'show_club.html', {'club': club})
 
 @login_required
 def apply(request):
@@ -109,7 +136,7 @@ def apply(request):
                     user_type = 4
                 )
             finally:
-                return redirect('feed')
+                return redirect('feed', selected_club_tracker.current_club)
     else:
         form = ApplicationForm()
     return render(request, 'apply.html', {'form': form})
@@ -132,3 +159,24 @@ def create_club(request):
     else:
         return HttpResponseRedirect(reverse('home'))
 
+class ClubListView(LoginRequiredMixin, ListView):
+    """View that shows a list of all clubs."""
+
+    model = Club
+    template_name = "club_list.html"
+    context_object_name = "clubs"
+    paginate_by = settings.CLUBS_PER_PAGE
+
+    def get_queryset(self):
+        return Club.objects.all()
+
+class MemberListView(LoginRequiredMixin, ListView):
+    """View that shows a list of all members."""
+
+    model = Member
+    template_name = "user_list.html"
+    context_object_name = "members"
+    paginate_by = settings.MEMBERS_PER_PAGE
+
+    def get_queryset(self):
+        return Member.objects.filter(user_type=3)
