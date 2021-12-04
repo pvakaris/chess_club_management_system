@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm
+from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm, ClubForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited, SelectedClubTracker
@@ -22,8 +22,6 @@ def home(request):
 
 @login_required
 def feed(request, club_id):
-    if club_id:
-        selected_club_tracker.current_club = club_id
     user = request.user
     members = Member.objects.filter(current_user = user)
     return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
@@ -37,7 +35,7 @@ def log_in(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
     return render(request, 'home.html', {'form': form})
@@ -63,7 +61,6 @@ def sign_up(request):
 @login_required
 def edit_profile(request):
     current_user = request.user
-
     if request.method == 'POST':
         form = UserForm(instance=current_user, data=request.POST)
         if form.is_valid():
@@ -75,9 +72,32 @@ def edit_profile(request):
     return render(request, 'edit_profile.html', {'form': form})
 
 @login_required
+def edit_club(request):
+    current_club = selected_club_tracker.current_club
+
+    if current_club == 0:
+        return redirect('feed', selected_club_tracker.current_club)
+
+    club = Club.objects.get(id = current_club)
+    if request.method == 'POST':
+        form = ClubForm(instance=club, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Club details updated!")
+            form.save()
+            return redirect('feed', current_club)
+    else:
+        form = ClubForm(instance=club)
+    return render(request, 'edit_club.html', {'form': form})
+
+@login_required
 def user_list(request):
     members = Member.objects.filter(user_type=3)
     return render(request, 'user_list.html', {'members': members})
+
+@login_required
+def club_list(request):
+    clubs = Club.objects.all()
+    return render(request, 'club_list.html', {'clubs': clubs})
 
 @login_required
 def show_user(request, user_id):
@@ -87,6 +107,16 @@ def show_user(request, user_id):
         return redirect('user_list')
     else:
         return render(request, 'show_user.html', {'user': user})
+
+@login_required
+def show_club(request, club_id):
+    selected_club_tracker.current_club = club_id
+    try:
+        club = Club.objects.get(id=club_id)
+    except ObjectDoesNotExist:
+        return redirect('club_list')
+    else:
+        return render(request, 'show_club.html', {'club': club})
 
 @login_required
 def apply(request):

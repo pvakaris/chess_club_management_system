@@ -10,7 +10,7 @@
         <table class="table">
           {% for member in members %}
             <tr>
-              <th><a href="{% url 'feed' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
+              <th><a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
               <th>{{ member.user_type }}</th>
             </tr>
           {% endfor %}
