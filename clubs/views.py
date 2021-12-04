@@ -10,21 +10,20 @@ from django.shortcuts import redirect, render
 from .forms import LogInForm, SignUpForm, UserForm, ApplicationForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
-from .helpers import login_prohibited
+from .helpers import login_prohibited, SelectedClubTracker
+
+selected_club_tracker = SelectedClubTracker.instance()
 
 @login_prohibited
 def home(request):
     form = LogInForm()
     return render(request, 'home.html', {'form': form})
 
-@login_required
-def feed(request):
-    user = request.user
-    members = Member.objects.filter(current_user = user)
-    return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
 
 @login_required
-def feed_with_club(request, club_id):
+def feed(request, club_id):
+    if club_id:
+        selected_club_tracker.current_club = club_id
     user = request.user
     members = Member.objects.filter(current_user = user)
     return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
@@ -45,6 +44,7 @@ def log_in(request):
 
 @login_required
 def log_out(request):
+    selected_club_tracker.current_club = 0
     logout(request)
     return redirect('home')
 
@@ -55,7 +55,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
@@ -69,7 +69,7 @@ def edit_profile(request):
         if form.is_valid():
             messages.add_message(request, messages.SUCCESS, "Profile updated!")
             form.save()
-            return redirect('feed')
+            return redirect('feed', selected_club_tracker.current_club)
     else:
         form = UserForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form})
@@ -105,7 +105,7 @@ def apply(request):
                     user_type = 4
                 )
             finally:
-                return redirect('feed')
+                return redirect('feed', selected_club_tracker.current_club)
     else:
         form = ApplicationForm()
     return render(request, 'apply.html', {'form': form})
