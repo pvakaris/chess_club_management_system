@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clubs',
     'widget_tweaks',
+    'bootstrap_pagination',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,9 @@ STATICFILES_DIRS = [
 # URL where @login_prohibited redirects to
 REDIRECT_URL_WHEN_LOGGED_IN = 'feed'
 
+# For paging
+MEMBERS_PER_PAGE = 10
+CLUBS_PER_PAGE = 10
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

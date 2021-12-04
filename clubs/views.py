@@ -1,4 +1,4 @@
-
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -90,16 +90,6 @@ def edit_club(request):
     return render(request, 'edit_club.html', {'form': form})
 
 @login_required
-def user_list(request):
-    members = Member.objects.filter(user_type=3)
-    return render(request, 'user_list.html', {'members': members})
-
-@login_required
-def club_list(request):
-    clubs = Club.objects.all()
-    return render(request, 'club_list.html', {'clubs': clubs})
-
-@login_required
 def show_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
@@ -139,3 +129,25 @@ def apply(request):
     else:
         form = ApplicationForm()
     return render(request, 'apply.html', {'form': form})
+
+class ClubListView(LoginRequiredMixin, ListView):
+    """View that shows a list of all clubs."""
+
+    model = Club
+    template_name = "club_list.html"
+    context_object_name = "clubs"
+    paginate_by = settings.CLUBS_PER_PAGE
+
+    def get_queryset(self):
+        return Club.objects.all()
+
+class MemberListView(LoginRequiredMixin, ListView):
+    """View that shows a list of all members."""
+
+    model = Member
+    template_name = "user_list.html"
+    context_object_name = "members"
+    paginate_by = settings.MEMBERS_PER_PAGE
+
+    def get_queryset(self):
+        return Member.objects.filter(user_type=3)
