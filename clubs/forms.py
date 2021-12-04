@@ -74,7 +74,6 @@ class UserForm(forms.ModelForm):
 
 class ApplicationForm(forms.Form):
     clubs = Club.objects.all()
-<<<<<<< HEAD
     days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
 
 
@@ -95,6 +94,3 @@ class ClubForm(forms.ModelForm):
         return club
 
     
-=======
-    club = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
->>>>>>> origin

@@ -7,7 +7,7 @@ from clubs.user_types import UserTypes
 
 class Command(BaseCommand):
     PASSWORD = "Password123"
-    USER_COUNT = 25
+    USER_COUNT = 5
     CLUB_COUNT = 3    
 
     def __init__(self):
@@ -15,13 +15,14 @@ class Command(BaseCommand):
         self.faker = Faker('en_GB')
 
     def handle(self, *args, **options):
-        if not User.objects.exists():
-            self.populate_reqired_users()
-        self.create_users()
+        self.populate_reqired_users()
+        
+        self.create_users() 
         self.create_clubs()
-        self.create_members()
+        self.create_members() 
 
-        kerbal = Club.objects.filter(name="Kerbal Chess Club")
+        #! populate required users in diverse clubs
+
         members = Member.objects.filter(user_type=UserTypes.CLUB_OWNER).count()
         print(f'there are: {members} club owners')
         print(f'there are: {Club.objects.count()} clubs')
@@ -58,9 +59,9 @@ class Command(BaseCommand):
         while member_count < Command.USER_COUNT:
             print(f'Seeding members {member_count}',  end='\r')
             try:
-                rand = random.randint(0,self.CLUB_COUNT-1)
+                rand = random.randint(0,Command.CLUB_COUNT-1)
                 self._create_member(users[member_count], clubs[rand])
-                self._create_member(users[member_count], clubs[rand+1])
+                #! need to add another member with same user of different club 
             except (IntegrityError):
                 continue
             member_count += 1
@@ -83,11 +84,20 @@ class Command(BaseCommand):
             personal_statement=personal_statement,
         )
     
+    def _create_club_owner(self, user, club):
+        Member.objects.create(
+            user_type = UserTypes.CLUB_OWNER,
+            current_user=user,
+            club_membership=club,
+        )
+    
     def _create_member(self, user, club):
         """Create a random member"""
-        user_type = self.faker.random_int(1,4)
+        options = list(map(int ,UserTypes))
+        user_type = random.choices(options, cum_weights=(0, 0.2, 0.4, 0.4), k=1)  # self.faker.random_int(2,4)
+        print(user_type)
         Member.objects.create(
-            user_type = user_type,
+            user_type = user_type[0]+1,
             current_user=user,
             club_membership=club,
         )
@@ -102,6 +112,8 @@ class Command(BaseCommand):
             location=location,
             description=description,
         )
+        self._create_club_owner(User.objects.order_by('?').first(), Club.objects.get(name=name))
+
 
     def _email(self, first_name, last_name):
         email = f'{first_name}.{last_name}@example.org'
@@ -113,36 +125,45 @@ class Command(BaseCommand):
     
     def _create_default_user(self, first_name, last_name, email):
         """Create specific user"""
-        bio = self.faker.text(max_nb_chars=520)
-        chess_experience = self.faker.random_int(0, 3000)
-        personal_statement = self.faker.text(max_nb_chars=10000)
-        User.objects.create_user(
-            username=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=Command.PASSWORD,
-            bio=bio,
-            chess_experience=chess_experience,
-            personal_statement=personal_statement,
-        )
+        try:
+            User.objects.get(username=email)
+        except User.DoesNotExist:
+            bio = self.faker.text(max_nb_chars=520)
+            chess_experience = self.faker.random_int(0, 3000)
+            personal_statement = self.faker.text(max_nb_chars=10000)
+            User.objects.create_user(
+                username=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=Command.PASSWORD,
+                bio=bio,
+                chess_experience=chess_experience,
+                personal_statement=personal_statement,
+            )
 
     def _create_default_member(self, membership_type, current_user, club_membership):
         """Create specific member"""
-        Member.objects.create(
-            user_type = membership_type,
-            current_user=current_user,
-            club_membership=club_membership,
-        )
+        try:
+            Member.objects.get(current_user=current_user, club_membership=club_membership)
+        except Member.DoesNotExist:
+            Member.objects.create(
+                user_type = membership_type,
+                current_user=current_user,
+                club_membership=club_membership,
+            )
 
     def _create_default_club(self, name):
         """Create specific club"""
-        location = self.faker.city()
-        description=self.faker.text(max_nb_chars=500)
-        Club.objects.create(
-            name = name,
-            location = location,
-            description = description,
-        )
+        try:
+            Club.objects.get(name=name)
+        except Club.DoesNotExist:
+            location = self.faker.city()
+            description=self.faker.text(max_nb_chars=500)
+            Club.objects.create(
+                name = name,
+                location = location,
+                description = description,
+            )
     
     def populate_reqired_users(self):
         """Populate required users"""
