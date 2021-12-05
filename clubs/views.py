@@ -107,7 +107,7 @@ def show_user(request, user_id):
     except ObjectDoesNotExist:
         return redirect('user_list')
     else:
-        return render(request, 'show_user.html', {'user': user})
+        return render(request, 'show_user.html', {'user': user})   
 
 @login_required
 def show_club(request, club_id):
@@ -153,7 +153,7 @@ def create_club(request):
                 current_user=current_usr,
                 club_membership=club
             )
-            return redirect('feed')
+            return redirect('/feed/0')
         else:
             return render(request, 'create_club.html', {'form': form})
     else:
@@ -180,3 +180,15 @@ class MemberListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Member.objects.filter(user_type=3)
+
+class ClubMemberListView(LoginRequiredMixin, ListView):
+    """View that shows a list of all members in the currently selected club"""
+
+    model = Member
+    template_name = "user_list.html"
+    context_object_name = "members"
+    paginate_by = settings.CLUBS_PER_PAGE
+
+    def get_queryset(self):
+        club = Club.objects.get(id=selected_club_tracker.current_club)
+        return Member.objects.filter(club_membership=club)

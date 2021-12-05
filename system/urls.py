@@ -32,4 +32,5 @@ urlpatterns = [
     path('clubs/', views.ClubListView.as_view(), name='club_list'),
     path('apply/', views.apply, name='apply'),
     path('create_club/', views.create_club, name='create_club'),
+    path('feed/members_my_club', views.ClubMemberListView.as_view(), name='members_my_club')
 ]
