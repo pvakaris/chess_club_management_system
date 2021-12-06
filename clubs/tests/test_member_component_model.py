@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 import clubs.user_types
 from clubs.models import *
@@ -78,8 +79,8 @@ class MemberModelTestcase(TestCase):
         self._assert_membership_is_valid()
 
     def test_current_user_cannot_be_a_member_of_same_club_twice(self):
-        second_membership = self._create_second_member(self.user, self.club)
-        self._assert_membership_is_invalid()
+        with self.assertRaises(IntegrityError):
+            second_membership = self._create_second_member(self.user, self.club)
 
     """Club membership tests"""
 
