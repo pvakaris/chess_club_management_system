@@ -83,8 +83,9 @@ class ClubForm(forms.ModelForm):
         widgets = { 'description': forms.Textarea()}
 
 class ApplicationForm(forms.Form):
-    clubs = Club.objects.all()
-    days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
+    def __init__(self):
+        self.clubs = Club.objects.all()
+        self.days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in self.clubs])
 
 
 class ClubForm(forms.ModelForm):
