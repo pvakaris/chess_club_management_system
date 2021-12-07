@@ -4,6 +4,15 @@
   <div class="row content">
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/club_profile.html' %}
+        <a class="btn btn-primary" href="{% url 'club_members' club_id=club.id %}" role="button">Club members</a>
+      {% if can_manage_applicants %}
+        <a class="btn btn-primary" href="{% url 'manage_applicants' club_id=club.id %}" role="button">Manage applications</a>
+      {% endif %}
+      {% if is_owner %}
+        <a class="btn btn-primary" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
+        <a class="btn btn-primary" href="{% url 'edit_club' club_id=club.id %}" role="button">Manage club</a>
+        <a class="btn btn-primary" href="#" role="button">Post a message</a>
+      {% endif %}
     </div>
   </div>
 </div>

@@ -6,9 +6,6 @@
     <li class="nav-item">
       <a class="nav-link" href="{% url 'club_list'%}">All clubs</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'members_my_club' %}">Club members</a>
-    </li>
   </ul>
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item">
@@ -26,11 +23,6 @@
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="{% url 'create_club' %}">Create club</a></li>
         <li><a class="dropdown-item" href="{% url 'apply'%}">Apply to club</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Manage applications</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'edit_club' %}">Manage club</a></li>
-        <li><a class="dropdown-item" href="#">Post a message</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="{% url 'log_out' %}">Log out</a></li>
      </ul>

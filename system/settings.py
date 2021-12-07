@@ -129,6 +129,7 @@ STATICFILES_DIRS = [
 
 # URL where @login_prohibited redirects to
 REDIRECT_URL_WHEN_LOGGED_IN = 'feed'
+REDIRECT_URL_WHEN_NOT_LOGGED_IN = 'home'
 
 # For paging
 MEMBERS_PER_PAGE = 10
