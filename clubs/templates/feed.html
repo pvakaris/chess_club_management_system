@@ -11,7 +11,15 @@
           {% for member in members %}
             <tr>
               <th><a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
-              <th>{{ member.user_type }}</th>
+              {% if member.user_type == 1 %}
+                <th>Owner</th>
+              {% elif member.user_type == 2 %}
+                <th>Officer</th>
+              {% elif member.user_type == 3 %}
+                <th>Member</th>
+              {% else %}
+                <th>Applicant</th>
+              {% endif %}
             </tr>
           {% endfor %}
         </table>

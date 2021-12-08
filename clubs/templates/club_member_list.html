@@ -1,0 +1,40 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container pt-2 pb-2">
+  <div class="row">
+    <div class="col-12">
+      <h1>Club members</h1>
+      <table class="table">
+        {% for member in members %}
+          <tr>
+            <td>
+              <img src="{{ member.current_user.mini_gravatar }}" alt="Gravatar of {{ member.current_user.username }}" class="rounded-circle" >
+            </td>
+            {% if member.user_type == 1 %}
+              <td><a class="link-danger" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+            {% elif member.user_type == 2 %}
+              <td><a class="link-warning" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+            {% else %}
+              <td><a class="link-primary" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+            {% endif %}
+            {% if is_owner %}
+              {% if member.current_user.id != request_user_id%}
+                {% if member.user_type == 2  %}
+                  <td></td>
+                  <td><a class="btn btn-primary" href="{% url 'kickout_member' user_id=member.current_user.id club_id=club.id %}" role="button">Kick out</a></td>
+                {% else %}
+                  <td><a class="btn btn-primary" href="{% url 'promote_member' user_id=member.current_user.id club_id=club.id %}" role="button">Promote</a></td>
+                  <td><a class="btn btn-primary" href="{% url 'kickout_member' user_id=member.current_user.id club_id=club.id %}" role="button">Kick out</a></td>
+                {% endif %}
+              {% else %}
+                <td></td>
+                <td></td>
+              {% endif %}
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

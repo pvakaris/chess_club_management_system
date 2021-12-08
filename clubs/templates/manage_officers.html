@@ -1,0 +1,27 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container pt-2 pb-2">
+  <div class="row">
+    <div class="col-12">
+      <h1>Officers</h1>
+      {% if officers_count == 0 %}
+        <p>Your club has no officers.</p>
+      {% else %}
+      <table class="table">
+        {% for officer in officers %}
+        <tr>
+          <td>
+            <img src="{{ officer.current_user.mini_gravatar }}" alt="Gravatar of {{ officer.current_user.username }}" class="rounded-circle" >
+          </td>
+          <td><a class="link-warning" href="{% url 'show_user' user_id=officer.current_user.id %}">{{ officer.current_user.full_name }}</a></td>
+          <td><a class="btn btn-primary" href="{% url 'demote_officer' user_id=officer.current_user.id club_id=club.id %}" role="button">Demote</a></td>
+          <td><a class="btn btn-primary" href="{% url 'make_owner' user_id=officer.current_user.id club_id=club.id %}" role="button">Make owner</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
