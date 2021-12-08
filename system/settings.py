@@ -144,3 +144,10 @@ LOGIN_URL = 'home'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'clubs.User'
+
+# Message level tags should use Bootstrap terms
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'dark',
+    message_constants.ERROR: 'danger',
+}
+
