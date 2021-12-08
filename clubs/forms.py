@@ -20,7 +20,7 @@ class LogInForm(forms.Form):
             user = authenticate(username=username, password=password)
         return user
 
-class SignUpForm(forms.ModelForm):  
+class SignUpForm(forms.ModelForm):
     """Form enabling unregistered users to sign up."""
     class Meta:
         """Form options."""
@@ -62,7 +62,7 @@ class SignUpForm(forms.ModelForm):
         )
         return user
 
-class UserForm(forms.ModelForm):
+class UserProfileEditingForm(forms.ModelForm):
     """Form to update user profiles."""
 
     class Meta:
@@ -72,7 +72,7 @@ class UserForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'username', 'bio', 'chess_experience', 'personal_statement']
         widgets = { 'bio': forms.Textarea(), 'personal_statement': forms.Textarea() }
 
-class ClubForm(forms.ModelForm):
+class ClubProfileEditingForm(forms.ModelForm):
     """Form to update club profiles."""
 
     class Meta:
@@ -82,12 +82,12 @@ class ClubForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = { 'description': forms.Textarea()}
 
-class ApplicationForm(forms.Form):
+class ClubApplicationForm(forms.Form):
     clubs = Club.objects.all()
-    days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
+    club = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
 
 
-class ClubForm(forms.ModelForm):
+class ClubCreationForm(forms.ModelForm):
     class Meta:
         """Form options."""
         model = Club
@@ -103,4 +103,26 @@ class ClubForm(forms.ModelForm):
         )
         return club
 
-    
+class PasswordChangingForm(forms.Form):
+    """Form enabling users to change their password."""
+
+    password = forms.CharField(label='Current password', widget=forms.PasswordInput())
+    new_password = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(),
+        validators=[RegexValidator(
+            regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$',
+            message='Password must contain an uppercase character, a lowercase '
+                    'character and a number'
+            )]
+    )
+    password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput())
+
+    def clean(self):
+        """Clean the data and generate messages for any errors."""
+
+        super().clean()
+        new_password = self.cleaned_data.get('new_password')
+        password_confirmation = self.cleaned_data.get('password_confirmation')
+        if new_password != password_confirmation:
+            self.add_error('password_confirmation', 'Confirmation does not match password.')

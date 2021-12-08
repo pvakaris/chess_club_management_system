@@ -1,10 +1,12 @@
 {% extends 'base_content.html' %}
 {% block content %}
-<div class="container">
+<div class="container pt-2 pb-2">
   <div class="row content">
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/club_profile.html' %}
+      {% if is_member %}
         <a class="btn btn-primary" href="{% url 'club_members' club_id=club.id %}" role="button">Club members</a>
+      {% endif %}
       {% if can_manage_applicants %}
         <a class="btn btn-primary" href="{% url 'manage_applicants' club_id=club.id %}" role="button">Manage applications</a>
       {% endif %}

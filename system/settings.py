@@ -131,9 +131,12 @@ STATICFILES_DIRS = [
 REDIRECT_URL_WHEN_LOGGED_IN = 'feed'
 REDIRECT_URL_WHEN_NOT_LOGGED_IN = 'home'
 
-# For paging
+# For pagination
 MEMBERS_PER_PAGE = 10
 CLUBS_PER_PAGE = 10
+
+# For @login_required decorator
+LOGIN_URL = 'home'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
