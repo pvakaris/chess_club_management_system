@@ -7,16 +7,10 @@ from clubs.models import User
 class UserModelTestCase(TestCase):
     """Unit test for the User model"""
 
+    fixtures = ['clubs/tests/fixtures/user.json']
+
     def setUp(self):
-        self.user = User.objects.create_user(
-            username='johndoe@example.org',
-            first_name='John',
-            last_name='Doe',
-            password='password123',
-            bio='The quick brown fox jumps over the lazy dog.',
-            personal_statement='hhhh',
-            chess_experience=101,
-        )
+        self.user = User.objects.get(username='johndoe@example.org')
 
     def test_valid_user(self):
         self._assert_user_is_valid()

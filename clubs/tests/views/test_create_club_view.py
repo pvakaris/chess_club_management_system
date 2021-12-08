@@ -11,6 +11,8 @@ from clubs.tests.helpers import LogInTester
 class CreateClubTestCase(TestCase):
     """Tests of the create club view"""
 
+    fixtures = ['clubs/tests/fixtures/user.json']
+
     def setUp(self):
         super(TestCase, self).setUp()
         self.url = reverse('create_club')
@@ -19,16 +21,7 @@ class CreateClubTestCase(TestCase):
             'location': 'London',
             'description': 'KCL chess club is the leading chess club in london'
         }
-        self.user = User.objects.create_user(
-            username='johndoe@example.org',
-            first_name='John',
-            last_name='Doe',
-            password='Password123',
-            bio='My bio',
-            personal_statement='My statement',
-            chess_experience=101,
-            is_active=True,
-        )
+        self.user = User.objects.get(username='johndoe@example.org')
 
     def test_create_club_url(self):
         self.assertEqual(self.url, '/create_club/')
@@ -43,7 +36,7 @@ class CreateClubTestCase(TestCase):
         user_count_after = Club.objects.count()
         self.assertEqual(user_count_after, user_count_before)
 
-    def test_successfull_create_club(self):
+    def test_successful_create_club(self):
         self.client.login(username=self.user.username, password="Password123")
         club_count_before = Club.objects.count()
         members_count_before = Member.objects.count()
@@ -58,7 +51,7 @@ class CreateClubTestCase(TestCase):
         KCL_club = Club.objects.get(name='KCL chess')
         KCL_members = Member.objects.filter(club_membership=KCL_club).count()
         self.assertEqual(KCL_members, 1)
-        response_url = reverse('feed')
+        response_url = reverse('feed', kwargs={'club_id': 0})
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
         club = Club.objects.get(name='KCL chess')
@@ -91,4 +84,3 @@ class CreateClubTestCase(TestCase):
         user_count_after = Club.objects.count()
         self.assertEqual(user_count_after, user_count_before)
         self.assertTemplateUsed(response, 'create_club.html')
-    

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django import forms
 from clubs.models import User
-from clubs.forms import ApplicationForm
+from clubs.forms import SignUpForm
 from django.core.exceptions import ValidationError
 
 class SignUpTestCase(TestCase):
@@ -19,11 +19,11 @@ class SignUpTestCase(TestCase):
         }
 
     def test_valid_sign_up_form(self):
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
     def test_form_has_necessary_fields(self):
-        form = ApplicationForm()
+        form = SignUpForm()
         self.assertIn('first_name', form.fields)
         self.assertIn('last_name', form.fields)
         self.assertIn('username', form.fields)
@@ -41,28 +41,28 @@ class SignUpTestCase(TestCase):
 
     def test_form_uses_model_validation(self):
         self.form_input['username'] = 'notanemail'
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
     def test_password_must_contain_uppercase_character(self):
         self.form_input['new_password'] = 'password123'
         self.form_input['password_confirmation'] = 'password123'
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
     def test_password_must_contain_lower_character(self):
         self.form_input['new_password'] = 'PASSWORD123'
         self.form_input['password_confirmation'] = 'PASSWORD123'
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
     def test_password_must_contain_number(self):
         self.form_input['new_password'] = 'PasswordABC'
         self.form_input['password_confirmation'] = 'PasswordABC'
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
     def test_new_password_and_password_confirmation_are_identical(self):
         self.form_input['password_confirmation'] = 'wrongpassword'
-        form = ApplicationForm(data=self.form_input)
+        form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
