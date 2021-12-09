@@ -9,8 +9,8 @@
       "password": "pbkdf2_sha256$260000$Q9GnCRFe28wM5lIzGtKPkl$ZAZz0lyxhlVcwqO+CRP0nzmBs6gtI+i0j+AIB+grRbE=",
       "bio": "The quick brown fox jumps over the lazy dog.",
       "personal_statement": "hhhh",
-      "chess_experience": "101",
-      "created_at": "2021-12-08T10:17:59+00:00"
+      "chess_experience": 101,
+      "created_at": "2021-11-21T10:17:59+00:00"
     }
   }
 ]

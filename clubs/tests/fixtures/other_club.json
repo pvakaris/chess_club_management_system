@@ -1,0 +1,11 @@
+[
+  {
+    "model": "clubs.club",
+    "pk": 2,
+    "fields": {
+      "name": "Club2",
+      "location": "Location2",
+      "description": "Description"
+    }
+  }
+]
