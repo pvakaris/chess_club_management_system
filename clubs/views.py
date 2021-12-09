@@ -65,6 +65,8 @@ def password(request):
                 login(request, current_user)
                 messages.add_message(request, messages.SUCCESS, "Password updated!")
                 return redirect('feed')
+        else:
+            messages.add_message(request, messages.ERROR, "Please check your input!")                
     form = PasswordChangingForm()
     return render(request, 'password.html', {'form': form})
 
