@@ -64,10 +64,10 @@ class Member(models.Model):
             models.UniqueConstraint(fields=['club_membership'], condition=Q(user_type=UserTypes.CLUB_OWNER), name="there can't exist more than one club owner")
         ]
 
-
-    def acceptApplicant(self, user):
+    def acceptApplicant(self, user, club):
         """Converts an applicant to a member"""
-        user.user_type = UserTypes.MEMBER
+        Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
+        # member.user_type = UserTypes.MEMBER
 
     def promoteMember(self, user):
         """Converts an member to an officer"""

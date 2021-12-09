@@ -127,11 +127,10 @@ def show_club(request, club_id):
     else:
         user = request.user
         user_type = None
-        # To restric users that are not applicants from seeing the club memebr list.
         try:
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
-        except ObjectDoesNotExist: # User is given APPLICANT status even if he is not even an applicant. Restrics from accessing the club memeber list.
+        except ObjectDoesNotExist: 
             pass
 
         return render(request, 'show_club.html', {'club': club, 'user_type': user_type})
@@ -265,20 +264,15 @@ def demote_officer(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@login_required
+@login_required  #? @club_owner_required
 def accept_application(request, club_id, user_id):
     club = Club.objects.get(id = club_id)
-    # To make sure that only staff members can accept applications
-    request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER or request_user_membership == UserTypes.OFFICER:
+    current_user = request.user
+    current_member = Member.objects.get(club_membership=club, current_user=current_user)
+    print(current_member.user_type)
+    if current_member.user_type == UserTypes.CLUB_OWNER or current_member.user_type == UserTypes.OFFICER:
         user = User.objects.get(id = user_id)
-        Member.objects.filter(club_membership=club, current_user=user).delete()
-        Member.objects.create(
-            user_type=UserTypes.MEMBER,
-            current_user=user,
-            club_membership=club
-        )
+        current_member.acceptApplicant(user, club)
         messages.add_message(request, messages.SUCCESS, "Application accepted!")
         return redirect('manage_applicants', club_id)
     else:
