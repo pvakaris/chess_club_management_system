@@ -269,7 +269,6 @@ def accept_application(request, club_id, user_id):
     club = Club.objects.get(id = club_id)
     current_user = request.user
     current_member = Member.objects.get(club_membership=club, current_user=current_user)
-    print(current_member.user_type)
     if current_member.user_type == UserTypes.CLUB_OWNER or current_member.user_type == UserTypes.OFFICER:
         user = User.objects.get(id = user_id)
         current_member.acceptApplicant(user, club)

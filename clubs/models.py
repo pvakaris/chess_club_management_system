@@ -67,17 +67,16 @@ class Member(models.Model):
     def acceptApplicant(self, user, club):
         """Converts an applicant to a member"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
-        # member.user_type = UserTypes.MEMBER
 
-    def promoteMember(self, user):
+    def promoteMember(self, user, club):
         """Converts an member to an officer"""
-        user.user_type = UserTypes.OFFICER
+        Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.OFFICER)
 
-    def transferOwnership(self, officer, club_owner):
+    def transferOwnership(self, current_officer, current_club_owner, club):
         """Converts an member to an officer"""
-        club_owner.user_type = UserTypes.OFFICER
-        officer.user_type = UserTypes.CLUB_OWNER
+        Member.objects.filter(club_membership=club, current_user=current_club_owner).update(user_type=UserTypes.OFFICER)
+        Member.objects.filter(club_membership=club, current_user=current_officer).update(user_type=UserTypes.CLUB_OWNER)
 
-    def demoteOfficer(self, user):
+    def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
-        user.user_type = UserTypes.MEMBER
+        Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
