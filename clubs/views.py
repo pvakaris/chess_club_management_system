@@ -98,7 +98,6 @@ def edit_profile(request):
 @login_required
 def edit_club(request, club_id):
     club = Club.objects.get(id = club_id)
-    print(club)
     if request.method == 'POST':
         form = ClubProfileEditingForm(instance=club, data=request.POST)
         if form.is_valid():
@@ -120,31 +119,26 @@ def show_user(request, user_id):
 
 @login_required
 def show_club(request, club_id):
+    """View to show the bio of a club."""
     try:
         club = Club.objects.get(id=club_id)
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
         user = request.user
+        user_type = None
         # To restric users that are not applicants from seeing the club memebr list.
         try:
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
         except ObjectDoesNotExist: # User is given APPLICANT status even if he is not even an applicant. Restrics from accessing the club memeber list.
-            user_type = UserTypes.APPLICANT
+            pass
 
-
-        if user_type == UserTypes.MEMBER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': False, 'is_owner': False, 'is_member': True})
-        elif user_type == UserTypes.OFFICER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': False, 'is_member': True})
-        elif user_type == UserTypes.CLUB_OWNER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': True, 'is_member': True})
-        else:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': False, 'is_owner': False, 'is_member': False})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type})
 
 @login_required
 def apply(request):
+    """view to apply to a club."""
     user = request.user
     if request.method == 'POST':
         form = ClubApplicationForm(request.POST)
