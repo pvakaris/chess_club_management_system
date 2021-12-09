@@ -96,6 +96,7 @@ def edit_profile(request):
 @login_required
 def edit_club(request, club_id):
     club = Club.objects.get(id = club_id)
+    print(club)
     if request.method == 'POST':
         form = ClubProfileEditingForm(instance=club, data=request.POST)
         if form.is_valid():
@@ -104,7 +105,7 @@ def edit_club(request, club_id):
             return redirect('feed')
     else:
         form = ClubProfileEditingForm(instance=club)
-    return render(request, 'edit_club.html', {'form': form})
+    return render(request, 'edit_club.html', {'form': form, 'club': club})
 
 @login_required
 def show_user(request, user_id):
