@@ -30,7 +30,7 @@ class MemberListTest(TestCase):
         self.client.login(username='johndoe@example.org', password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'user_list.html')
+        self.assertTemplateUsed(response, 'member_list.html')
         self.assertEqual(len(response.context['members']), settings.MEMBERS_PER_PAGE)
         for user_id in range(settings.MEMBERS_PER_PAGE-1):
             self.assertContains(response, f'user{user_id}@test.org')

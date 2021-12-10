@@ -48,7 +48,7 @@ class SignUpViewTestCase(TestCase):
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = User.objects.count()
         self.assertEqual(before_count+1, after_count)
-        response_url = reverse('feed', kwargs={'club_id': 0})
+        response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
         user = User.objects.get(username='johndoe@example.org')
