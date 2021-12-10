@@ -5,7 +5,16 @@
     "fields": {
       "name": "Club2",
       "location": "Location2",
-      "description": "Description"
+      "description": "Description2"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 3,
+    "fields": {
+      "name": "Club3",
+      "location": "Location3",
+      "description": "Description3"
     }
   }
 ]
