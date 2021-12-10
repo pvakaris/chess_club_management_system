@@ -72,14 +72,15 @@ class Member(models.Model):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.OFFICER)
 
-    def transferOwnership(self, current_officer, current_club_owner, club):
+    def transferOwnership(self, new_club_owner, old_club_owner, club):
         """Converts an member to an officer"""
-        Member.objects.filter(club_membership=club, current_user=current_club_owner).update(user_type=UserTypes.OFFICER)
-        Member.objects.filter(club_membership=club, current_user=current_officer).update(user_type=UserTypes.CLUB_OWNER)
+        Member.objects.filter(club_membership=club, current_user=old_club_owner).update(user_type=UserTypes.OFFICER)
+        Member.objects.filter(club_membership=club, current_user=new_club_owner).update(user_type=UserTypes.CLUB_OWNER)
 
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
 
     def kickOutMember(self, user, club):
+        """Kicks a member out from a club"""
         Member.objects.filter(club_membership=club, current_user=user).delete()

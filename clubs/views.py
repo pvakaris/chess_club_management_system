@@ -237,7 +237,7 @@ def kickout_member(request, club_id, user_id):
     club = Club.objects.get(id = club_id)
     # To make sure that only the owner can kick-out a member
     request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
+    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
     if request_user_membership == UserTypes.CLUB_OWNER:
         user = User.objects.get(id = user_id)
         Member.objects.filter(club_membership=club, current_user=user).delete()
@@ -250,16 +250,11 @@ def kickout_member(request, club_id, user_id):
 def demote_officer(request, club_id, user_id):
     """View to demote an officer to a member"""
     club = Club.objects.get(id = club_id)
-    request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER:
-        user = User.objects.get(id = user_id)
-        Member.objects.filter(club_membership=club, current_user=user).delete()
-        Member.objects.create(
-            user_type=UserTypes.MEMBER,
-            current_user=user,
-            club_membership=club
-        )
+    officer_to_demote = User.objects.get(id = user_id)
+    current_user = request.user
+    current_member = Member.objects.get(club_membership=club, current_user=current_user)
+    if current_member.user_type == UserTypes.CLUB_OWNER:
+        current_member.demoteOfficer(officer_to_demote, club)
         messages.add_message(request, messages.SUCCESS, "Officer was demoted!")
         return redirect('manage_officers', club_id)
     else:
@@ -283,6 +278,7 @@ def accept_application(request, club_id, user_id):
 
 @login_required
 def decline_application(request, club_id, user_id):
+    """Declines an applicant"""
     club = Club.objects.get(id = club_id)
     request_user = request.user
     request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
@@ -296,25 +292,13 @@ def decline_application(request, club_id, user_id):
 
 @login_required
 def make_owner(request, club_id, user_id):
+    """Transfer ownership to other club member"""
     club = Club.objects.get(id = club_id)
-    user = User.objects.get(id = user_id)
-    # To make sure that only the owner can reassign his ownership
-    request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER:
-        Member.objects.filter(club_membership=club, current_user=request_user).delete()
-        Member.objects.filter(club_membership=club, current_user=user).delete()
-
-        Member.objects.create(
-            user_type=UserTypes.CLUB_OWNER,
-            current_user=user,
-            club_membership=club
-        )
-        Member.objects.create(
-            user_type=UserTypes.MEMBER,
-            current_user=request_user,
-            club_membership=club
-        )
+    new_club_owner = User.objects.get(id = user_id)
+    old_club_owner = request.user
+    request_user_membership = Member.objects.get(club_membership=club, current_user=old_club_owner)
+    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
+        request_user_membership.transferOwnership(new_club_owner, old_club_owner, club)
         messages.add_message(request, messages.SUCCESS, "Club ownership was reassigned!")
         return redirect('show_club', club_id)
     else:
