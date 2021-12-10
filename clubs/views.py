@@ -234,13 +234,13 @@ def promote_member(request, club_id, user_id):
 
 @login_required
 def kickout_member(request, club_id, user_id):
+    """View that kicks a member out of the current club"""
     club = Club.objects.get(id = club_id)
-    # To make sure that only the owner can kick-out a member
     request_user = request.user
     request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER:
+    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
         user = User.objects.get(id = user_id)
-        Member.objects.filter(club_membership=club, current_user=user).delete()
+        Member.kickOutMember(user, club)
         messages.add_message(request, messages.SUCCESS, "Member was removed from the club!")
         return redirect('club_members', club_id)
     else:
@@ -258,7 +258,7 @@ def demote_officer(request, club_id, user_id):
         messages.add_message(request, messages.SUCCESS, "Officer was demoted!")
         return redirect('manage_officers', club_id)
     else:
-        return redirect(f'feed/{club_id}')
+        return redirect('feed')
 
 @login_required  #? @club_owner_required
 def accept_application(request, club_id, user_id):
