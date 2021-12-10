@@ -111,7 +111,7 @@ def show_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
     except ObjectDoesNotExist:
-        return redirect('user_list')
+        return redirect('member_list')
     else:
         return render(request, 'show_user.html', {'user': user})
 

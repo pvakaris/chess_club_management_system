@@ -4,12 +4,13 @@ from clubs.models import Club
 
 class ClubModelTestCase(TestCase):
     """Unit tests for club model"""
+
+    fixtures = [
+        'clubs/tests/fixtures/club.json',
+        'clubs/tests/fixtures/other_club.json']
+
     def setUp(self):
-        self.club = Club.objects.create(
-            name = "Club",
-            location = "Location",
-            description = "Description"
-        )
+        self.club = Club.objects.get(name="Club")
 
     def test_valid_club(self):
         self._assert_club_is_valid()
@@ -21,7 +22,7 @@ class ClubModelTestCase(TestCase):
         self._assert_club_is_invalid()
 
     def test_name_cannot_already_exist(self):
-        second_club = self._create_second_club()
+        second_club = Club.objects.get(name="Club2")
         self.club.name = second_club.name
         self._assert_club_is_invalid()
 
@@ -35,12 +36,12 @@ class ClubModelTestCase(TestCase):
 
     """Location tests"""
 
-    def test_location_may_be_blank(self):
+    def test_location_cannot_be_blank(self):
         self.club.location = ''
-        self._assert_club_is_valid()
+        self._assert_club_is_invalid()
 
     def test_location_may_already_exist(self):
-        second_club = self._create_second_club()
+        second_club = Club.objects.get(name="Club2")
         self.club.location = second_club.location
         self._assert_club_is_valid()
 
@@ -54,12 +55,12 @@ class ClubModelTestCase(TestCase):
 
     """Description tests"""
 
-    def test_description_may_be_blank(self):
+    def test_description_cannot_be_blank(self):
         self.club.description = ''
-        self._assert_club_is_valid()
+        self._assert_club_is_invalid()
 
     def test_description_may_already_exist(self):
-        second_club = self._create_second_club()
+        second_club = Club.objects.get(name="Club2")
         self.club.description = second_club.description
         self._assert_club_is_valid()
 
@@ -82,11 +83,3 @@ class ClubModelTestCase(TestCase):
     def _assert_club_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.club.full_clean()
-
-    def _create_second_club(self):
-        second_club = Club.objects.create(
-            name = "Club2",
-            location = "Location2",
-            description = "Description2"
-        )
-        return second_club
