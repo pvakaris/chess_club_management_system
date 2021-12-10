@@ -215,18 +215,13 @@ def manage_officers(request, club_id):
 
 @login_required
 def promote_member(request, club_id, user_id):
+    """View that promotes a member to an officer"""
     club = Club.objects.get(id = club_id)
     user = User.objects.get(id = user_id)
-    # To make sure that only the owner can promote a member
     request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER:
-        Member.objects.filter(club_membership=club, current_user=user).delete()
-        Member.objects.create(
-            user_type=UserTypes.OFFICER,
-            current_user=user,
-            club_membership=club
-        )
+    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
+    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
+        Member.promoteMember(user, club)
         messages.add_message(request, messages.SUCCESS, "Member was promoted successfully!")
         return redirect('club_members', club_id)
     else:

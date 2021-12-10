@@ -68,6 +68,7 @@ class Member(models.Model):
         """Converts an applicant to a member"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
 
+    @classmethod
     def promoteMember(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.OFFICER)
