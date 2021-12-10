@@ -80,3 +80,6 @@ class Member(models.Model):
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
+
+    def kickOutMember(self, user, club):
+        Member.objects.filter(club_membership=club, current_user=user).delete()

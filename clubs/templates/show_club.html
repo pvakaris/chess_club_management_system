@@ -4,15 +4,15 @@
   <div class="row content">
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/club_profile.html' %}
-      {% if user_type %}
-        <a class="btn btn-primary" href="{% url 'club_members' club_id=club.id %} " role="button" color=white>Club members</a>     
+      {% if user_type == 1 or user_type == 2 or user_type == 3 %}
+        <a class="btn btn-outline-info" href="{% url 'club_members' club_id=club.id %} " role="button" color="#FFFFFF">Club members</a>     
         {% if user_type == 1 or user_type == 2 %}
-          <a class="btn btn-primary" href="{% url 'manage_applicants' club_id=club.id %}" role="button" color=white>Manage applications</a>
+          <a class="btn btn-outline-info" href="{% url 'manage_applicants' club_id=club.id %}" role="button" color=white>Manage applications</a>
         {% endif %}
         {% if user_type == 1 %}
-          <a class="btn btn-primary" href="{% url 'manage_officers' club_id=club.id %}" role="button" color=white>Manage officers</a>
-          <a class="btn btn-primary" href="{% url 'edit_club' club_id=club.id %}" role="button" color=white>Manage club</a>
-          <a class="btn btn-primary" href="#" role="button" color=white>Post a message</a>        {% endif %}
+          <a class="btn btn-outline-info" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
+          <a class="btn btn-outline-info" href="{% url 'edit_club' club_id=club.id %}" role="button" color=white>Manage club</a>
+          <a class="btn btn-outline-info" href="#" role="button" color=white>Post a message</a>        {% endif %}
       {% endif %}
     </div>
   </div>

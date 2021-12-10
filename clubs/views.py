@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
+import logging
 from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
@@ -20,6 +21,7 @@ from system.settings import REDIRECT_URL_WHEN_LOGGED_IN
 from django.views import View
 from django.urls import reverse
 from django.db.models import Q
+
 
 @login_prohibited
 def home(request):
@@ -132,7 +134,6 @@ def show_club(request, club_id):
             user_type = user_membership.user_type
         except ObjectDoesNotExist: 
             pass
-
         return render(request, 'show_club.html', {'club': club, 'user_type': user_type})
 
 @login_required
@@ -247,8 +248,8 @@ def kickout_member(request, club_id, user_id):
 
 @login_required
 def demote_officer(request, club_id, user_id):
+    """View to demote an officer to a member"""
     club = Club.objects.get(id = club_id)
-    # To make sure that only the owner can demote an officer
     request_user = request.user
     request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
     if request_user_membership == UserTypes.CLUB_OWNER:
@@ -262,12 +263,14 @@ def demote_officer(request, club_id, user_id):
         messages.add_message(request, messages.SUCCESS, "Officer was demoted!")
         return redirect('manage_officers', club_id)
     else:
-        return redirect('feed')
+        return redirect(f'feed/{club_id}')
 
 @login_required  #? @club_owner_required
 def accept_application(request, club_id, user_id):
+    """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)
     current_user = request.user
+    #! We need a try catch block in case the member doesn't exist
     current_member = Member.objects.get(club_membership=club, current_user=current_user)
     if current_member.user_type == UserTypes.CLUB_OWNER or current_member.user_type == UserTypes.OFFICER:
         user = User.objects.get(id = user_id)
@@ -277,13 +280,13 @@ def accept_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
+
 @login_required
 def decline_application(request, club_id, user_id):
     club = Club.objects.get(id = club_id)
-    # To make sure that only staff members can decline applications
     request_user = request.user
-    request_user_membership = Member.objects.filter(club_membership=club, current_user=request_user)
-    if request_user_membership == UserTypes.CLUB_OWNER or request_user_membership == UserTypes.OFFICER:
+    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
+    if request_user_membership.user_type == UserTypes.CLUB_OWNER or request_user_membership.user_type == UserTypes.OFFICER:
         user = User.objects.get(id = user_id)
         Member.objects.filter(club_membership=club, current_user=user).delete()
         messages.add_message(request, messages.WARNING, "Application declined!")
@@ -339,7 +342,6 @@ class MemberListView(LoginRequiredMixin, ListView):
     paginate_by = settings.MEMBERS_PER_PAGE
 
     def get_queryset(self):
-        # We filter out all the users that are not APPLICANTS (user_type 4).
         members = Member.objects.filter(
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
@@ -347,16 +349,4 @@ class MemberListView(LoginRequiredMixin, ListView):
         )
         return members
 
-#class ClubMemberListView(LoginRequiredMixin, ListView):
-#    """View that shows a list of all members in the currently selected club"""
-#
-#    model = Member
-#    template_name = "user_list.html"
-#    context_object_name = "members"
-#    paginate_by = settings.CLUBS_PER_PAGE
-#
-#
-#
-#    def get_queryset(self):
-#        club = Club.objects.get(id=???)
-#        return Member.objects.filter(club_membership=club)
+
