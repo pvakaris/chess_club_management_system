@@ -28,10 +28,10 @@ def home(request):
     form = LogInForm()
     return render(request, 'home.html', {'form': form})
 
-@login_required
+@login_required #TODO show the amount of club members
 def feed(request):
     user = request.user
-    members = Member.objects.filter(current_user = user)
+    members = Member.objects.filter(current_user = user)  #* we want a list of club names, 
     return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
 
 @login_prohibited
@@ -145,11 +145,12 @@ def show_club(request, club_id): #TODO show club owners profile
         try:
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
+            club_members = Member.objects.filter(club_membership=club).count()
         except ObjectDoesNotExist: 
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members})
 
 @login_required
 def apply(request):
