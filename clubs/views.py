@@ -13,7 +13,7 @@ import logging
 from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
-from .helpers import login_prohibited, club_owner_required
+from .helpers import login_prohibited, club_owner_required, member_required
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -119,6 +119,19 @@ def show_user(request, user_id):
     else:
         return render(request, 'show_user.html', {'user': user})
 
+@member_required
+@login_required
+def club_member(request, club_id, user_id):
+    """Shows a club member with respect to what membership type you possess."""
+    user = User.objects.get(id=user_id)
+    club = Club.objects.get(id=club_id)
+    current_user = request.user
+    member = Member.objects.get(current_user=current_user, club_membership=club)
+    if(member.user_type == UserTypes.MEMBER):
+        return render(request, 'show_user.html', {'user': user})
+    else:
+        return render(request, 'show_user_full.html', {'user': user})
+
 @login_required
 def show_club(request, club_id): #TODO show club owners profile
     """View to show the bio of a club."""
@@ -183,6 +196,7 @@ def create_club(request):
         form = ClubCreationForm()
     return render(request, 'create_club.html', {'form': form})
 
+@member_required
 @login_required
 def club_members(request, club_id):
     user = request.user
@@ -192,7 +206,6 @@ def club_members(request, club_id):
         Q(user_type = UserTypes.OFFICER, club_membership=club) |
         Q(user_type = UserTypes.CLUB_OWNER, club_membership=club)
     )
-    # We check if this is the club owner that wants to look at the club members list. If it is, we provide a functionality to promote or kick out members.
     user_membership = Member.objects.get(current_user = user, club_membership = club)
     user_type = user_membership.user_type
 

@@ -11,11 +11,11 @@
               <img src="{{ member.current_user.mini_gravatar }}" alt="Gravatar of {{ member.current_user.username }}" class="rounded-circle" >
             </td>
             {% if member.user_type == 1 %}
-              <td><a class="link-danger" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+              <td><a class="link-danger" href="{% url 'club_member' user_id=member.current_user.id club_id=club.id %}">{{ member.current_user.full_name }}</a></td>
             {% elif member.user_type == 2 %}
-              <td><a class="link-warning" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+              <td><a class="link-warning" href="{% url 'club_member' user_id=member.current_user.id club_id=club.id %}">{{ member.current_user.full_name }}</a></td>
             {% else %}
-              <td><a class="link-primary" href="{% url 'show_user' user_id=member.current_user.id %}">{{ member.current_user.full_name }}</a></td>
+              <td><a class="link-primary" href="{% url 'club_member' user_id=member.current_user.id club_id=club.id %}">{{ member.current_user.full_name }}</a></td>
             {% endif %}
             {% if is_owner %}
               {% if member.current_user.id != request_user_id%}

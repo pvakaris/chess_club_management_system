@@ -24,8 +24,27 @@ def club_owner_required(view_function):
             else:
                 return redirect('show_club', club_id)
         except ObjectDoesNotExist:
-            redirect(settings.REDIRECT_WEN_NOT_CLUB_OWNER)
+            return redirect(settings.REDIRECT_WEN_NOT_CLUB_OWNER)
     return modified_view_function
+
+def member_required(view_function):
+    def modified_view_function(request, club_id, user_id=None):
+        user = request.user
+        club = Club.objects.get(id=club_id)
+        try:
+            member = Member.objects.get(current_user=user, club_membership=club)
+            if member.user_type == UserTypes.CLUB_OWNER or member.user_type == UserTypes.OFFICER or member.user_type == UserTypes.MEMBER:
+                if user_id:
+                    return view_function(request, club_id, user_id)
+                else:
+                    return view_function(request, club_id)
+            else:
+                return redirect('show_club', club_id) 
+        except ObjectDoesNotExist:
+            return redirect('show_club', club_id)  
+                   
+    return modified_view_function
+
 
 #TODO club_or_officer_required
 #TODO member_required
