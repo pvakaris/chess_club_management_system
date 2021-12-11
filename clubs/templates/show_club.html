@@ -13,9 +13,14 @@
       {% if is_owner %}
         <a class="btn btn-primary" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
         <a class="btn btn-primary" href="{% url 'edit_club' club_id=club.id %}" role="button">Manage club</a>
-        <a class="btn btn-primary" href="#" role="button">Post a message</a>
+        <a class="btn btn-primary" href="{% url 'post_messages' club_id=club.id %}" role="button">Post a message</a>
       {% endif %}
     </div>
-  </div>
+  {% if is_member %}
+    <div class="col-xs-12 col-lg-6 col-xl-8">
+      <h1>Notice</h1>
+      {% include 'partials/posts_as_table.html' with posts=posts %}
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

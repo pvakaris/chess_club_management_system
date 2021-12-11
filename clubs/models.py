@@ -81,3 +81,16 @@ class Member(models.Model):
     def demoteOfficer(self, user):
         """Converts an member to an officer"""
         user.user_type = UserTypes.MEMBER
+
+class Post(models.Model):
+    """Posts by users in their microblogs."""
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.CharField(max_length=280)
+    created_at = models.DateTimeField(auto_now_add=True)
+    club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    class Meta:
+        """Model options."""
+
+        ordering = ['-created_at']

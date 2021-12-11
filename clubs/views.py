@@ -9,9 +9,9 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
+from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm,PostForm
 from django.contrib.auth.decorators import login_required
-from .models import User, Member, Club
+from .models import Post, User, Member, Club
 from .helpers import login_prohibited
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
@@ -110,15 +110,17 @@ def edit_club(request, club_id):
 def show_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
+        posts = Post.objects.filter(author_id=user_id)
     except ObjectDoesNotExist:
         return redirect('user_list')
     else:
-        return render(request, 'show_user.html', {'user': user})
+        return render(request, 'show_user.html', {'user': user, 'posts': posts})
 
 @login_required
 def show_club(request, club_id):
     try:
         club = Club.objects.get(id=club_id)
+        posts = Post.objects.filter(club_member_id=club_id)
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
@@ -132,11 +134,11 @@ def show_club(request, club_id):
 
 
         if user_type == UserTypes.MEMBER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': False, 'is_owner': False, 'is_member': True})
+            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': False, 'is_owner': False, 'is_member': True,'posts': posts})
         elif user_type == UserTypes.OFFICER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': False, 'is_member': True})
+            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': False, 'is_member': True,'posts': posts})
         elif user_type == UserTypes.CLUB_OWNER:
-            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': True, 'is_member': True})
+            return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': True, 'is_owner': True, 'is_member': True,'posts': posts})
         else:
             return render(request, 'show_club.html', {'club': club, 'can_manage_applicants': False, 'is_owner': False, 'is_member': False})
 
@@ -356,6 +358,25 @@ class MemberListView(LoginRequiredMixin, ListView):
             Q(user_type = UserTypes.MEMBER)
         )
         return members
+
+@login_required
+def post_messages(request,club_id):
+    if request.user.is_authenticated:
+        current_user = request.user
+        club = Club.objects.get(id = club_id)
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            if form.is_valid():
+                text = form.cleaned_data.get('text')
+                post = Post.objects.create(author=current_user, text=text,club_member=club)
+                messages.add_message(request, messages.SUCCESS, "Post created!")
+                return redirect('feed')
+            else:
+                return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+        form = PostForm()
+        return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+    else:
+        return HttpResponseForbidden()
 
 #class ClubMemberListView(LoginRequiredMixin, ListView):
 #    """View that shows a list of all members in the currently selected club"""

@@ -41,5 +41,6 @@ urlpatterns = [
     path('demote_officer/<int:club_id>/<int:user_id>', views.demote_officer, name='demote_officer'),
     path('accept_application/<int:club_id>/<int:user_id>', views.accept_application, name='accept_application'),
     path('decline_application/<int:club_id>/<int:user_id>', views.decline_application, name='decline_application'),
-    path('make_owner/<int:club_id>/<int:user_id>', views.make_owner , name='make_owner')
+    path('make_owner/<int:club_id>/<int:user_id>', views.make_owner , name='make_owner'),
+    path('post_messages/<int:club_id>', views.post_messages,name='post_messages'),
 ]

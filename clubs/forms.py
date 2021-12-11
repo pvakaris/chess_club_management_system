@@ -1,7 +1,7 @@
 """Forms for the microblogs app."""
 from django import forms
 from django.core.validators import RegexValidator
-from .models import User, Club, Member
+from .models import User, Club, Member,Post
 from django.contrib.auth import authenticate
 
 
@@ -126,3 +126,18 @@ class PasswordChangingForm(forms.Form):
         password_confirmation = self.cleaned_data.get('password_confirmation')
         if new_password != password_confirmation:
             self.add_error('password_confirmation', 'Confirmation does not match password.')
+
+class PostForm(forms.ModelForm):
+    """Form to ask user for post text.
+
+    The post author must be by the post creator.
+    """
+
+    class Meta:
+        """Form options."""
+
+        model = Post
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea()
+        }

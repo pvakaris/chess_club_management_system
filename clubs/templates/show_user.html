@@ -5,6 +5,10 @@
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/user_profile_full.html' %}
     </div>
+    <div class="col-xs-12 col-lg-6 col-xl-8">
+      <h1>Notice</h1>
+      {% include 'partials/posts_as_table.html' with posts=posts %}
+    </div>
   </div>
 </div>
 {% endblock %}
