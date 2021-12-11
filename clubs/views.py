@@ -13,7 +13,7 @@ import logging
 from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
-from .helpers import login_prohibited
+from .helpers import login_prohibited, club_owner_required
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -120,7 +120,7 @@ def show_user(request, user_id):
         return render(request, 'show_user.html', {'user': user})
 
 @login_required
-def show_club(request, club_id):
+def show_club(request, club_id): #TODO show club owners profile
     """View to show the bio of a club."""
     try:
         club = Club.objects.get(id=club_id)
@@ -134,7 +134,9 @@ def show_club(request, club_id):
             user_type = user_membership.user_type
         except ObjectDoesNotExist: 
             pass
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type})
+        club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
+        user = club_owner.current_user
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user})
 
 @login_required
 def apply(request):
@@ -211,8 +213,6 @@ def manage_officers(request, club_id):
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
     return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count()})
 
-##########   PROMOTING MEMBERS, ACCEPTING APPLICATIONS, ETC.   ##########
-
 @login_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
@@ -255,7 +255,9 @@ def demote_officer(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@login_required  #? @club_owner_required
+
+@club_owner_required
+@login_required  #? @club_owner_required(club_id)
 def accept_application(request, club_id, user_id):
     """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)

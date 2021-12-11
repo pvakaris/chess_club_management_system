@@ -1,5 +1,9 @@
 from django.conf import settings
 from django.shortcuts import redirect
+from django.core.exceptions import ObjectDoesNotExist
+from .models import User, Member, Club
+from .user_types import UserTypes
+import logging
 
 def login_prohibited(view_function):
     def modified_view_function(request):
@@ -8,3 +12,20 @@ def login_prohibited(view_function):
         else:
             return view_function(request)
     return modified_view_function
+
+def club_owner_required(view_function):
+    def modified_view_function(request, club_id, user_id):
+        user = request.user
+        club = Club.objects.get(id=club_id)
+        try:
+            member = Member.objects.get(current_user=user, club_membership=club)
+            if member.user_type == UserTypes.CLUB_OWNER:
+                return view_function(request, club_id, user_id)
+            else:
+                return redirect('show_club', club_id)
+        except ObjectDoesNotExist:
+            redirect(settings.REDIRECT_WEN_NOT_CLUB_OWNER)
+    return modified_view_function
+
+#TODO club_or_officer_required
+#TODO member_required
