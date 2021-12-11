@@ -354,7 +354,7 @@ class MemberListView(LoginRequiredMixin, ListView):
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
             Q(user_type = UserTypes.MEMBER)
-        )
+        ).order_by('current_user__first_name')
         return members
 
 #class ClubMemberListView(LoginRequiredMixin, ListView):
