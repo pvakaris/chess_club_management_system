@@ -97,6 +97,7 @@ def edit_profile(request):
         form = UserProfileEditingForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form})
 
+
 @login_required
 def edit_club(request, club_id):
     club = Club.objects.get(id = club_id)
