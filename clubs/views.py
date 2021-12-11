@@ -13,7 +13,7 @@ import logging
 from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
-from .helpers import login_prohibited, club_owner_required, member_required
+from .helpers import login_prohibited, club_owner_required, member_required, staff_required
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -216,18 +216,21 @@ def club_members(request, club_id):
     else:
         return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': False, 'request_user_id': user.id})
 
+@staff_required
 @login_required
 def manage_applicants(request, club_id):
     club = Club.objects.get(id = club_id)
     applicants = Member.objects.filter(club_membership=club, user_type=UserTypes.APPLICANT)
     return render(request, 'manage_applicants.html', {'applicants': applicants, 'club': club, 'applicants_count': applicants.count()})
 
+@club_owner_required
 @login_required
 def manage_officers(request, club_id):
     club = Club.objects.get(id = club_id)
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
     return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count()})
 
+@staff_required
 @login_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
@@ -242,6 +245,7 @@ def promote_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
+@staff_required
 @login_required
 def kickout_member(request, club_id, user_id):
     """View that kicks a member out of the current club"""
@@ -256,6 +260,7 @@ def kickout_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
+@club_owner_required
 @login_required
 def demote_officer(request, club_id, user_id):
     """View to demote an officer to a member"""
@@ -271,8 +276,8 @@ def demote_officer(request, club_id, user_id):
         return redirect('feed')
 
 
-@club_owner_required
-@login_required  #? @club_owner_required(club_id)
+@staff_required
+@login_required
 def accept_application(request, club_id, user_id):
     """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)
@@ -287,7 +292,7 @@ def accept_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
-
+@staff_required
 @login_required
 def decline_application(request, club_id, user_id):
     """Declines an applicant"""
@@ -302,6 +307,7 @@ def decline_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
+@club_owner_required
 @login_required
 def make_owner(request, club_id, user_id):
     """Transfer ownership to other club member"""
