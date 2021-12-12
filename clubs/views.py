@@ -123,7 +123,7 @@ def show_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
     except ObjectDoesNotExist:
-        return redirect('user_list')
+        return redirect('member_list')
     else:
         return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
@@ -370,7 +370,7 @@ class MemberListView(LoginRequiredMixin, ListView):
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
             Q(user_type = UserTypes.MEMBER)
-        )
+        ).order_by('current_user__first_name')
         return members
 
     def get_context_data(self, **kwargs):

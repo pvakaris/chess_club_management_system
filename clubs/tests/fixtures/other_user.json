@@ -1,0 +1,44 @@
+[
+  {
+    "model": "clubs.user",
+    "pk": 2,
+    "fields": {
+      "username": "janedoe@example.org",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "password": "pbkdf2_sha256$260000$Q9GnCRFe28wM5lIzGtKPkl$ZAZz0lyxhlVcwqO+CRP0nzmBs6gtI+i0j+AIB+grRbE=",
+      "bio": "This is the second bio",
+      "personal_statement": "statement2",
+      "chess_experience": 201,
+      "created_at": "2021-12-04T10:17:59+00:00"
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 3,
+    "fields": {
+      "username": "alexjordan@example.org",
+      "first_name": "Alex",
+      "last_name": "Jordan",
+      "password": "pbkdf2_sha256$260000$Q9GnCRFe28wM5lIzGtKPkl$ZAZz0lyxhlVcwqO+CRP0nzmBs6gtI+i0j+AIB+grRbE=",
+      "bio": "This is the third bio",
+      "personal_statement": "statement3",
+      "chess_experience": 301,
+      "created_at": "2021-12-05T10:17:59+00:00"
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 4,
+    "fields": {
+      "username": "anniesmith@example.org",
+      "first_name": "Annie",
+      "last_name": "Smith",
+      "password": "pbkdf2_sha256$260000$Q9GnCRFe28wM5lIzGtKPkl$ZAZz0lyxhlVcwqO+CRP0nzmBs6gtI+i0j+AIB+grRbE=",
+      "bio": "This is the fourth bio",
+      "personal_statement": "statement4",
+      "chess_experience": 401,
+      "created_at": "2021-12-06T10:17:59+00:00"
+    }
+  }
+]
