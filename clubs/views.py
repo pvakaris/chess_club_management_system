@@ -69,7 +69,7 @@ def password(request):
                 messages.add_message(request, messages.SUCCESS, "Password updated!")
                 return redirect('feed')
         else:
-            messages.add_message(request, messages.ERROR, "Please check your input!")                
+            messages.add_message(request, messages.ERROR, "Please check your input!")
     form = PasswordChangingForm()
     return render(request, 'password.html', {'form': form, 'myclubs':members})
 
@@ -156,7 +156,7 @@ def show_club(request, club_id): #TODO show club owners profile
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
             club_members = Member.objects.filter(club_membership=club).count()
-        except ObjectDoesNotExist: 
+        except ObjectDoesNotExist:
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
@@ -349,7 +349,7 @@ class ClubListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Return all clubs."""
         return Club.objects.all()
-    
+
     def get_context_data(self, **kwargs):
         """Return context data, including new post form."""
         context = super().get_context_data(**kwargs)
@@ -366,12 +366,8 @@ class MemberListView(LoginRequiredMixin, ListView):
     paginate_by = settings.MEMBERS_PER_PAGE
 
     def get_queryset(self):
-<<<<<<< HEAD
-        members = Member.objects.filter(
-=======
         # We filter out all the users that are not APPLICANTS (user_type 4) and the members are sorted by first name
         memberships = Member.objects.filter(
->>>>>>> Ojebo-remove-duplicates-member-list
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
             Q(user_type = UserTypes.MEMBER)
@@ -381,7 +377,7 @@ class MemberListView(LoginRequiredMixin, ListView):
             for user in User.objects.all():
                 if user.username == member.current_user.username:
                     memberset.add(user.username)
-        members = User.objects.filter(username__in = memberset)
+        members = User.objects.filter(username__in = memberset).order_by('first_name')
         return members
 
     def get_context_data(self, **kwargs):
