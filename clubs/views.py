@@ -349,12 +349,18 @@ class MemberListView(LoginRequiredMixin, ListView):
     paginate_by = settings.MEMBERS_PER_PAGE
 
     def get_queryset(self):
-        # We filter out all the users that are not APPLICANTS (user_type 4).
-        members = Member.objects.filter(
+        # We filter out all the users that are not APPLICANTS (user_type 4) and the members are sorted by first name
+        memberships = Member.objects.filter(
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
             Q(user_type = UserTypes.MEMBER)
-        ).order_by('current_user__first_name')
+        )
+        memberset = set()
+        for member in memberships:
+            for user in User.objects.all():
+                if user.username == member.current_user.username:
+                    memberset.add(user.username)
+        members = User.objects.filter(username__in = memberset)
         return members
 
 #class ClubMemberListView(LoginRequiredMixin, ListView):
