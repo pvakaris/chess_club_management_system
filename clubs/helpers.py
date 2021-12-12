@@ -65,5 +65,5 @@ def member_required(view_function):
     return modified_view_function
 
 
-#TODO club_or_officer_required
-#TODO member_required
+#TODO retrieve get_users_clubs
+#TODO get user_type current user

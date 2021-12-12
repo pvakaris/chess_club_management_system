@@ -31,8 +31,8 @@ def home(request):
 @login_required #TODO show the amount of club members
 def feed(request):
     user = request.user
-    members = Member.objects.filter(current_user = user)  #* we want a list of club names, 
-    return render(request, 'feed.html', {'user': user, 'members': members, 'clubsCount': members.count()})
+    members = Member.objects.filter(current_user = user)
+    return render(request, 'feed.html', {'user': user, 'myclubs': members})
 
 @login_prohibited
 def log_in(request):
@@ -56,6 +56,7 @@ def log_out(request):
 @login_required
 def password(request):
     current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
     if request.method == 'POST':
         form = PasswordChangingForm(data=request.POST)
         if form.is_valid():
@@ -70,7 +71,7 @@ def password(request):
         else:
             messages.add_message(request, messages.ERROR, "Please check your input!")                
     form = PasswordChangingForm()
-    return render(request, 'password.html', {'form': form})
+    return render(request, 'password.html', {'form': form, 'myclubs':members})
 
 @login_prohibited
 def sign_up(request):
@@ -87,6 +88,7 @@ def sign_up(request):
 @login_required
 def edit_profile(request):
     current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
     if request.method == 'POST':
         form = UserProfileEditingForm(instance=current_user, data=request.POST)
         if form.is_valid():
@@ -95,11 +97,14 @@ def edit_profile(request):
             return redirect('feed')
     else:
         form = UserProfileEditingForm(instance=current_user)
-    return render(request, 'edit_profile.html', {'form': form})
+    return render(request, 'edit_profile.html', {'form': form, 'myclubs':members})
 
 
+@club_owner_required
 @login_required
 def edit_club(request, club_id):
+    current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
     club = Club.objects.get(id = club_id)
     if request.method == 'POST':
         form = ClubProfileEditingForm(instance=club, data=request.POST)
@@ -109,16 +114,18 @@ def edit_club(request, club_id):
             return redirect('feed')
     else:
         form = ClubProfileEditingForm(instance=club)
-    return render(request, 'edit_club.html', {'form': form, 'club': club})
+    return render(request, 'edit_club.html', {'form': form, 'club': club, 'myclubs':members})
 
 @login_required
 def show_user(request, user_id):
+    current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
     try:
         user = User.objects.get(id=user_id)
     except ObjectDoesNotExist:
         return redirect('user_list')
     else:
-        return render(request, 'show_user.html', {'user': user})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
 @member_required
 @login_required
@@ -127,11 +134,12 @@ def club_member(request, club_id, user_id):
     user = User.objects.get(id=user_id)
     club = Club.objects.get(id=club_id)
     current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
     member = Member.objects.get(current_user=current_user, club_membership=club)
     if(member.user_type == UserTypes.MEMBER):
-        return render(request, 'show_user.html', {'user': user})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
     else:
-        return render(request, 'show_user_full.html', {'user': user})
+        return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
 
 @login_required
 def show_club(request, club_id): #TODO show club owners profile
@@ -142,6 +150,7 @@ def show_club(request, club_id): #TODO show club owners profile
         return redirect('club_list')
     else:
         user = request.user
+        members = Member.objects.filter(current_user = user)
         user_type = None
         try:
             user_membership = Member.objects.get(current_user = user, club_membership = club)
@@ -151,12 +160,13 @@ def show_club(request, club_id): #TODO show club owners profile
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': members})
 
 @login_required
 def apply(request):
     """view to apply to a club."""
     user = request.user
+    members = Member.objects.filter(current_user = user)
     if request.method == 'POST':
         form = ClubApplicationForm(request.POST)
         if form.is_valid():
@@ -177,12 +187,13 @@ def apply(request):
             return redirect('feed')
     else:
         form = ClubApplicationForm()
-    return render(request, 'apply.html', {'form': form})
+    return render(request, 'apply.html', {'form': form, 'myclubs':members})
 
 
 @login_required
 def create_club(request):
     user = request.user
+    members = Member.objects.filter(current_user = user)
     if request.method == 'POST':
         form = ClubCreationForm(request.POST)
         if form.is_valid():
@@ -196,7 +207,7 @@ def create_club(request):
         return redirect('feed')
     else:
         form = ClubCreationForm()
-    return render(request, 'create_club.html', {'form': form})
+    return render(request, 'create_club.html', {'form': form, 'myclubs': members})
 
 @member_required
 @login_required
@@ -208,27 +219,32 @@ def club_members(request, club_id):
         Q(user_type = UserTypes.OFFICER, club_membership=club) |
         Q(user_type = UserTypes.CLUB_OWNER, club_membership=club)
     )
+    myClubs = Member.objects.filter(current_user = user)
     user_membership = Member.objects.get(current_user = user, club_membership = club)
     user_type = user_membership.user_type
 
     if user_type == UserTypes.CLUB_OWNER:
-        return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': True, 'request_user_id': user.id})
+        return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': True, 'request_user_id': user.id, 'myclubs':myClubs})
     else:
-        return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': False, 'request_user_id': user.id})
+        return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': False, 'request_user_id': user.id, 'myclubs': myClubs})
 
 @staff_required
 @login_required
 def manage_applicants(request, club_id):
+    user = request.user
+    myClubs = Member.objects.filter(current_user = user)
     club = Club.objects.get(id = club_id)
     applicants = Member.objects.filter(club_membership=club, user_type=UserTypes.APPLICANT)
-    return render(request, 'manage_applicants.html', {'applicants': applicants, 'club': club, 'applicants_count': applicants.count()})
+    return render(request, 'manage_applicants.html', {'applicants': applicants, 'club': club, 'applicants_count': applicants.count(), 'myclubs':myClubs})
 
 @club_owner_required
 @login_required
 def manage_officers(request, club_id):
+    user = request.user
+    myClubs = Member.objects.filter(current_user = user)
     club = Club.objects.get(id = club_id)
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
-    return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count()})
+    return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count(), 'myclubs':myClubs})
 
 @staff_required
 @login_required
@@ -282,7 +298,6 @@ def accept_application(request, club_id, user_id):
     """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)
     current_user = request.user
-    #! We need a try catch block in case the member doesn't exist
     current_member = Member.objects.get(club_membership=club, current_user=current_user)
     if current_member.user_type == UserTypes.CLUB_OWNER or current_member.user_type == UserTypes.OFFICER:
         user = User.objects.get(id = user_id)
@@ -322,7 +337,6 @@ def make_owner(request, club_id, user_id):
     else:
         return redirect('feed')
 
-##########   PROMOTING MEMBERS, ACCEPTING APPLICATIONS, ETC.   ##########
 
 class ClubListView(LoginRequiredMixin, ListView):
     """View that shows a list of all clubs."""
@@ -333,7 +347,15 @@ class ClubListView(LoginRequiredMixin, ListView):
     paginate_by = settings.CLUBS_PER_PAGE
 
     def get_queryset(self):
+        """Return all clubs."""
         return Club.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        """Return context data, including new post form."""
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['myclubs'] = Member.objects.filter(current_user = user)
+        return context
 
 class MemberListView(LoginRequiredMixin, ListView):
     """ View that shows a list of all members. """
@@ -351,4 +373,11 @@ class MemberListView(LoginRequiredMixin, ListView):
         )
         return members
 
+    def get_context_data(self, **kwargs):
+        """Return context data, including new post form."""
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['myclubs'] = Member.objects.filter(current_user = user)
+        return context
 
+#TODO refactor views.py -> create folder with files

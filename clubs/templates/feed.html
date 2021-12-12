@@ -8,7 +8,7 @@
           <p>No memberships found. &emsp13;<a href="{% url 'apply' %}" class="label link-primary pt-1">Apply for a membership now.</a></p>
         {% else %}
         <table class="table">
-          {% for member in members %}
+          {% for member in myclubs %}
             <tr>
               <th><a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
               {% if member.user_type == 1 %}

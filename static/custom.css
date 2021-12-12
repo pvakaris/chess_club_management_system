@@ -163,3 +163,9 @@ h3.profile-title {
   text-decoration: underline;
   color: black;
 }
+
+.scrollable-menu {
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
+}

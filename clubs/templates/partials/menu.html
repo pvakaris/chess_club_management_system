@@ -1,3 +1,4 @@
+{% load static %}
 <div class="collapse navbar-collapse" id="navbarNav">
   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
     <li class="nav-item">
@@ -5,6 +6,18 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{% url 'club_list'%}">All clubs</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link" href="#" id="user-account-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+        <span>My clubs</span>
+      </a>
+      <ul class="dropdown-menu scrollable-menu" role="menu">
+        {% for member in myclubs %}
+          <tr>
+            <a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a>
+          </tr>              
+          {% endfor %}
+     </ul>
     </li>
   </ul>
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -18,7 +31,7 @@
         <span class="bi bi-list"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
-        <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Update profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit profile</a></li>
         <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="{% url 'create_club' %}">Create club</a></li>

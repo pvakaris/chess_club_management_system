@@ -86,3 +86,5 @@ class Member(models.Model):
     def kickOutMember(self, user, club):
         """Kicks a member out from a club"""
         Member.objects.filter(club_membership=club, current_user=user).delete()
+
+#TODO make all class methods
