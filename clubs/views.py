@@ -366,11 +366,22 @@ class MemberListView(LoginRequiredMixin, ListView):
     paginate_by = settings.MEMBERS_PER_PAGE
 
     def get_queryset(self):
+<<<<<<< HEAD
         members = Member.objects.filter(
+=======
+        # We filter out all the users that are not APPLICANTS (user_type 4) and the members are sorted by first name
+        memberships = Member.objects.filter(
+>>>>>>> Ojebo-remove-duplicates-member-list
             Q(user_type = UserTypes.CLUB_OWNER) |
             Q(user_type = UserTypes.OFFICER) |
             Q(user_type = UserTypes.MEMBER)
-        ).order_by('current_user__first_name')
+        )
+        memberset = set()
+        for member in memberships:
+            for user in User.objects.all():
+                if user.username == member.current_user.username:
+                    memberset.add(user.username)
+        members = User.objects.filter(username__in = memberset)
         return members
 
     def get_context_data(self, **kwargs):
