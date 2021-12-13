@@ -359,7 +359,7 @@ class MemberListView(LoginRequiredMixin, ListView):
         )
         return members
 
-@club_owner_required
+@login_required
 def post_messages(request,club_id):
     if request.user.is_authenticated:
         current_user = request.user
