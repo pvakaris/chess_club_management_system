@@ -10,9 +10,9 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
 import logging
-from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
+from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm,PostForm
 from django.contrib.auth.decorators import login_required
-from .models import User, Member, Club
+from .models import User, Member, Club,Post
 from .helpers import login_prohibited, club_owner_required, member_required, staff_required
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
@@ -120,12 +120,15 @@ def edit_club(request, club_id):
 def show_user(request, user_id):
     current_user = request.user
     members = Member.objects.filter(current_user = current_user)
+    posts = Post.objects.filter(author_id=user_id) 
     try:
         user = User.objects.get(id=user_id)
     except ObjectDoesNotExist:
         return redirect('member_list')
     else:
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members, 'posts': posts})
+
+   
 
 @member_required
 @login_required
@@ -146,6 +149,7 @@ def show_club(request, club_id): #TODO show club owners profile
     """View to show the bio of a club."""
     try:
         club = Club.objects.get(id=club_id)
+        posts = Post.objects.filter(club_member_id=club_id)
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
@@ -160,7 +164,7 @@ def show_club(request, club_id): #TODO show club owners profile
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': members})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': members, 'posts': posts})
 
 @login_required
 def apply(request):
@@ -336,6 +340,26 @@ def make_owner(request, club_id, user_id):
         return redirect('show_club', club_id)
     else:
         return redirect('feed')
+
+@club_owner_required
+@login_required
+def post_messages(request,club_id):
+    if request.user.is_authenticated:
+        current_user = request.user
+        club = Club.objects.get(id = club_id)
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            if form.is_valid():
+                message = form.cleaned_data.get('message')
+                post = Post.objects.create(author=current_user, message=message,club_member=club)
+                messages.add_message(request, messages.SUCCESS, "Post created!")
+                return redirect('feed')
+            else:
+                return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+        form = PostForm()
+        return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+    else:
+        return HttpResponseForbidden()
 
 
 class ClubListView(LoginRequiredMixin, ListView):
