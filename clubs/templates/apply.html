@@ -1,14 +1,18 @@
 {% extends 'base_content.html' %}
 {% block content %}
+
 <div class="container pt-2 pb-2">
   <div class="row">
     <div class="col-12">
       <h1>Apply for a membership</h1>
-      <form action="{% url 'apply' %}" method="post">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Apply" class="btn btn-primary">
-      </form>
+      <table class="table">
+        {% for club in clubs %}
+          <tr>
+            <td><a class="link-primary" href="{% url 'show_club' club.id %}">{{ club.name }}</a></td>
+            <td><a class="btn btn-primary" href="{% url 'apply_club' club_id=club.id %}" role="button">Apply</a></td>
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 </div>

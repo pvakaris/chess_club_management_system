@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
 import logging
-from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
+from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Member, Club
 from .helpers import login_prohibited, club_owner_required, member_required, staff_required
@@ -142,52 +142,50 @@ def club_member(request, club_id, user_id):
         return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
 
 @login_required
-def show_club(request, club_id): #TODO show club owners profile
+def show_club(request, club_id):
     """View to show the bio of a club."""
     try:
         club = Club.objects.get(id=club_id)
+        club_members = Member.objects.filter(club_membership=club).count()
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
         user = request.user
-        members = Member.objects.filter(current_user = user)
+        myclubs = Member.objects.filter(current_user = user)
         user_type = None
         try:
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
-            club_members = Member.objects.filter(club_membership=club).count()
         except ObjectDoesNotExist:
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': members})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs})
 
+#TODO change this
 @login_required
 def apply(request):
     """view to apply to a club."""
     user = request.user
     members = Member.objects.filter(current_user = user)
-    if request.method == 'POST':
-        form = ClubApplicationForm(request.POST)
-        if form.is_valid():
-            clubName = form.cleaned_data.get('club')
-            club = Club.objects.get(name = clubName)
-            try:
-                membership = Member.objects.get(current_user=user, club_membership = club)
-            except ObjectDoesNotExist:
-                Member.objects.create(
-                    club_membership = club,
-                    current_user = user,
-                    user_type = UserTypes.APPLICANT
-                )
-                messages.add_message(request, messages.SUCCESS, "Application was sent to the club owner!")
-            finally:
-                return redirect('feed')
-        else:
-            return redirect('feed')
-    else:
-        form = ClubApplicationForm()
-    return render(request, 'apply.html', {'form': form, 'myclubs':members})
+    clubset = set()
+    clubs = Club.objects.all()
+    for club in clubs:
+        try:
+            Member.objects.get(current_user=user, club_membership=club)
+        except ObjectDoesNotExist:
+            clubset.add(club)
+    return render(request, 'apply.html', {'clubs': clubset, 'myclubs':members}) 
+
+@login_required
+def apply_club(request, club_id):
+    """Creates a new member of type APPLICANT with the currently logged in user"""
+    user = request.user
+    club = Club.objects.get(id=club_id)
+    Member.applyClub(user, club)
+    messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
+    return redirect('feed')
+
 
 
 @login_required
@@ -246,6 +244,7 @@ def manage_officers(request, club_id):
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
     return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count(), 'myclubs':myClubs})
 
+#TODO refactor
 @staff_required
 @login_required
 def promote_member(request, club_id, user_id):
@@ -261,6 +260,7 @@ def promote_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
+#TODO refactor
 @staff_required
 @login_required
 def kickout_member(request, club_id, user_id):
@@ -276,6 +276,7 @@ def kickout_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
+#TODO refactor
 @club_owner_required
 @login_required
 def demote_officer(request, club_id, user_id):
@@ -291,7 +292,7 @@ def demote_officer(request, club_id, user_id):
     else:
         return redirect('feed')
 
-
+#TODO refactor
 @staff_required
 @login_required
 def accept_application(request, club_id, user_id):
@@ -307,6 +308,7 @@ def accept_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
+#TODO refactor
 @staff_required
 @login_required
 def decline_application(request, club_id, user_id):
@@ -322,6 +324,7 @@ def decline_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
+#TODO refactor
 @club_owner_required
 @login_required
 def make_owner(request, club_id, user_id):

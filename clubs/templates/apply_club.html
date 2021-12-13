@@ -1,0 +1,22 @@
+{% extends 'base_content.html' %}
+{% block content %}
+
+<div class="container pt-2 pb-2">
+  <div class="row">
+    <div class="col-12">
+      <h1>Apply for a membership</h1>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown button
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% for club in clubs %}
+            <a class="dropdown-item" href="{% url 'apply_club' club_id=club.id %}">{{ club.name }}</a>
+          {% endfor %}
+        </ul>
+      </div> 
+    </div>
+    <a class="btn btn-primary" href="{% url 'apply_club' club_id=club.id %}" role="button">Apply</a>
+  </div>
+</div>
+{% endblock %}

@@ -81,14 +81,6 @@ class ClubProfileEditingForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = { 'description': forms.Textarea()}
 
-class ClubApplicationForm(forms.Form):
-    clubs = Club.objects.all()
-    days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
-    def __init__(self):
-        self.clubs = Club.objects.all()
-        self.days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in self.clubs])
-
-
 class ClubCreationForm(forms.ModelForm):
     class Meta:
         """Form options."""

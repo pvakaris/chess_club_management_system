@@ -87,4 +87,12 @@ class Member(models.Model):
         """Kicks a member out from a club"""
         Member.objects.filter(club_membership=club, current_user=user).delete()
 
+    @classmethod
+    def applyClub(self, user, club):
+        Member.objects.create(
+            user_type = UserTypes.APPLICANT,
+            current_user=user,
+            club_membership=club,
+        )
+
 #TODO make all class methods
