@@ -128,7 +128,7 @@ class PasswordChangingForm(forms.Form):
             self.add_error('password_confirmation', 'Confirmation does not match password.')
 
 class PostForm(forms.ModelForm):
-    """Form to ask user for post text.
+    """Form to ask owner for post text.
 
     The post author must be by the post creator.
     """
@@ -137,7 +137,7 @@ class PostForm(forms.ModelForm):
         """Form options."""
 
         model = Post
-        fields = ['text']
+        fields = ['messages']
         widgets = {
             'text': forms.Textarea()
         }

@@ -1,11 +1,14 @@
 from django.db import connections, models
+from django.db.models.expressions import CombinedExpression
 from django.db.models.fields import DateTimeField
-from django.db.models import CheckConstraint, Q, F
+from django.db.models import CheckConstraint, Q, F, constraints
+from django.forms.widgets import CheckboxSelectMultiple
 from .user_types import UserTypes
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
+
 
 class User(AbstractUser):
     """User in a club."""
@@ -83,14 +86,13 @@ class Member(models.Model):
         user.user_type = UserTypes.MEMBER
 
 class Post(models.Model):
-    """Posts by users in their microblogs."""
+    """Posts by users in their clubs."""
 
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.CharField(max_length=280)
+    messages = models.CharField(blank=False,max_length=280)
     created_at = models.DateTimeField(auto_now_add=True)
     club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
-
     class Meta:
         """Model options."""
-
+        
         ordering = ['-created_at']

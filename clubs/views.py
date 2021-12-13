@@ -12,7 +12,7 @@ from django.shortcuts import redirect, render
 from .forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubApplicationForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm,PostForm
 from django.contrib.auth.decorators import login_required
 from .models import Post, User, Member, Club
-from .helpers import login_prohibited
+from .helpers import login_prohibited,club_owner_required
 from .user_types import UserTypes
 from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -359,7 +359,7 @@ class MemberListView(LoginRequiredMixin, ListView):
         )
         return members
 
-@login_required
+@club_owner_required
 def post_messages(request,club_id):
     if request.user.is_authenticated:
         current_user = request.user
