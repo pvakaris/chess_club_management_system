@@ -5,6 +5,9 @@ from clubs.forms import LogInForm
 from django.core.exceptions import ValidationError
 
 class LogInTestCase(TestCase):
+
+    fixtures = ['clubs/tests/fixtures/user.json']
+
     def setUp(self):
         self.form_input = {
             'username': 'johndoe@example.org',
@@ -48,3 +51,28 @@ class LogInTestCase(TestCase):
         self.form_input['password'] = '123password'
         form = LogInForm(data=self.form_input)
         self.assertTrue(form.is_valid())
+
+    def test_can_authenticate_valid_user(self):
+        fixture = User.objects.get(username='johndoe@example.org')
+        form_input = {'username': 'johndoe@example.org', 'password': 'Password123'}
+        form = LogInForm(data=form_input)
+        user = form.get_user()
+        self.assertEqual(user, fixture)
+
+    def test_invalid_credentials_do_not_authenticate(self):
+        form_input = {'username': 'johndoe@example.org', 'password': 'WrongPassword123'}
+        form = LogInForm(data=form_input)
+        user = form.get_user()
+        self.assertEqual(user, None)
+
+    def test_blank_password_does_not_authenticate(self):
+        form_input = {'username': 'johndoe@example.org', 'password': ''}
+        form = LogInForm(data=form_input)
+        user = form.get_user()
+        self.assertEqual(user, None)
+
+    def test_blank_username_does_not_authenticate(self):
+        form_input = {'username': '', 'password': 'Password123'}
+        form = LogInForm(data=form_input)
+        user = form.get_user()
+        self.assertEqual(user, None)

@@ -21,7 +21,7 @@ class SignUpViewTestCase(TestCase):
         }
 
     def test_sign_up_url(self):
-        self.assertEqual(reverse('sign_up'), '/sign_up/')
+        self.assertEqual(self.url, '/sign_up/')
 
     def test_get_sign_up(self):
         response = self.client.get(self.url)

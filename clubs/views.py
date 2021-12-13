@@ -204,7 +204,8 @@ def create_club(request):
                 club_membership=club
             )
             messages.add_message(request, messages.SUCCESS, "Club was created successfully!")
-        return redirect('feed')
+            return redirect('feed')
+        return redirect('create_club')
     else:
         form = ClubCreationForm()
     return render(request, 'create_club.html', {'form': form, 'myclubs': members})
