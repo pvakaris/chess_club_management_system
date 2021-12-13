@@ -12,12 +12,18 @@
         {% if user_type == 1 %}
           <a class="btn btn-outline-info" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
           <a class="btn btn-outline-info" href="{% url 'edit_club' club_id=club.id %}" role="button">Manage club</a>
-          <a class="btn btn-outline-info" href="#" role="button">Post a message</a>        {% endif %}
+          <a class="btn btn-outline-info" href="{% url 'post_messages' club_id=club.id %}" role="button">Post a message</a>        {% endif %}
       {% endif %}
     </div>
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/user_profile_reduced.html' with user=user%}
     </div>
+  {% if user_type == 1 or user_type == 2 or user_type == 3 %}
+    <div class="col-xs-12 col-lg-6 col-xl-8">
+      <h1>Notice</h1>
+      {% include 'partials/posts_as_table.html' with posts=posts %}
+    </div>
+  {% endif %}
   </div>
 </div>
 {% endblock %}

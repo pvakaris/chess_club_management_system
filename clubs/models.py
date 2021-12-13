@@ -1,6 +1,6 @@
 from django.db import connections, models
 from django.db.models.fields import DateTimeField
-from django.db.models import CheckConstraint, Q, F
+from django.db.models import CheckConstraint, Q, F, constraints
 from .user_types import UserTypes
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.validators import RegexValidator
@@ -96,3 +96,15 @@ class Member(models.Model):
         )
 
 #TODO make all class methods
+
+class Post(models.Model):
+    """Posts by users in their clubs."""
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(blank=False,max_length=280)
+    created_at = models.DateTimeField(auto_now_add=True)
+    club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
+    class Meta:
+        """Model options."""
+        
+        ordering = ['-created_at']
