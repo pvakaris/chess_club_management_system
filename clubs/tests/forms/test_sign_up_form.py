@@ -50,7 +50,7 @@ class SignUpTestCase(TestCase):
         form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
-    def test_password_must_contain_lower_character(self):
+    def test_password_must_contain_lowercase_character(self):
         self.form_input['new_password'] = 'PASSWORD123'
         self.form_input['password_confirmation'] = 'PASSWORD123'
         form = SignUpForm(data=self.form_input)
