@@ -22,3 +22,11 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
         self.assertFalse(self._is_logged_in())
+
+    def test_get_log_out_redirects_when_not_logged_in(self):
+        self.assertFalse(self._is_logged_in())
+        response = self.client.get(self.url, follow=True)
+        redirect_url = '/?next=' + self.url
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'home.html')
+        self.assertFalse(self._is_logged_in())
