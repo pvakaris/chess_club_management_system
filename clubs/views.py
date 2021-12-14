@@ -186,9 +186,14 @@ def apply_club(request, club_id):
     """Creates a new member of type APPLICANT with the currently logged in user"""
     user = request.user
     club = Club.objects.get(id=club_id)
-    Member.applyClub(user, club)
-    messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
-    return redirect('feed')
+    try:
+        Member.objects.get(current_user=user, club_membership=club)
+        messages.add_message(request, messages.ERROR, f"You're already a member of { club.name }!!")
+    except ObjectDoesNotExist:
+        Member.applyClub(user, club)
+        messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
+    finally:
+        return redirect('feed')
 
 
 
