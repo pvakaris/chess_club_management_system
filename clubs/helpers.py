@@ -16,8 +16,8 @@ def login_prohibited(view_function):
 def club_owner_required(view_function):
     def modified_view_function(request, club_id, user_id=None):
         user = request.user
-        club = Club.objects.get(id=club_id)
         try:
+            club = Club.objects.get(id=club_id)
             member = Member.objects.get(current_user=user, club_membership=club)
             if member.user_type == UserTypes.CLUB_OWNER:
                 if user_id:
@@ -27,14 +27,14 @@ def club_owner_required(view_function):
             else:
                 return redirect('show_club', club_id)
         except ObjectDoesNotExist:
-            return redirect('show_club', club_id) 
+            return redirect('feed') 
     return modified_view_function
 
 def staff_required(view_function):
     def modified_view_function(request, club_id, user_id=None):
         user = request.user
-        club = Club.objects.get(id=club_id)
         try:
+            club = Club.objects.get(id=club_id)
             member = Member.objects.get(current_user=user, club_membership=club)
             if member.user_type == UserTypes.CLUB_OWNER or member.user_type == UserTypes.OFFICER:
                 if user_id:
@@ -44,14 +44,14 @@ def staff_required(view_function):
             else:
                 return redirect('show_club', club_id) 
         except ObjectDoesNotExist:
-            return redirect('show_club', club_id)  
+            return redirect('feed')   
     return modified_view_function
 
 def member_required(view_function):
     def modified_view_function(request, club_id, user_id=None):
         user = request.user
-        club = Club.objects.get(id=club_id)
         try:
+            club = Club.objects.get(id=club_id)
             member = Member.objects.get(current_user=user, club_membership=club)
             if member.user_type == UserTypes.CLUB_OWNER or member.user_type == UserTypes.OFFICER or member.user_type == UserTypes.MEMBER:
                 if user_id:
@@ -61,7 +61,7 @@ def member_required(view_function):
             else:
                 return redirect('show_club', club_id) 
         except ObjectDoesNotExist:
-            return redirect('show_club', club_id)  
+            return redirect('feed')
     return modified_view_function
 
 
