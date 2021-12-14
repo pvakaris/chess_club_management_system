@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
+from clubs.tests.helpers import reverse_with_next
 
 class MemberListViewTest(TestCase):
     fixtures = [
@@ -78,7 +79,7 @@ class MemberListViewTest(TestCase):
 
     def test_get_member_list_redirects_when_not_logged_in(self):
         response = self.client.get(self.url, follow=True)
-        redirect_url = "/?next=" + self.url
+        redirect_url = reverse_with_next('home', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
 
