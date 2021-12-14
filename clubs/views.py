@@ -215,8 +215,8 @@ def create_club(request):
         form = ClubCreationForm()
     return render(request, 'create_club.html', {'form': form, 'myclubs': members})
 
-@member_required
 @login_required
+@member_required
 def club_members(request, club_id):
     user = request.user
     club = Club.objects.get(id = club_id)

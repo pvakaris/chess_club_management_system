@@ -29,6 +29,17 @@ class ClubMemberViewTest(TestCase):
     def test_redirects_when_not_member_of_club(self):
         self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    
+    def test_redirect_when_applicant_of_club(self):        
+        self.client.login(username=self.user.username, password='Password123')
+        Member.objects.create(
+            user_type = UserTypes.APPLICANT,
+            current_user=self.user,
+            club_membership=self.club,
+        )
+        response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
