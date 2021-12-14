@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.test import TestCase
 from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
+from clubs.tests.helpers import reverse_with_next
 
 class DeclineApplicantViewTestCase(TestCase):
 
@@ -58,7 +59,7 @@ class DeclineApplicantViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         member_count_after = Member.objects.filter(user_type=UserTypes.MEMBER).count()
         self.assertEqual(member_count_before, member_count_after)
-        redirect_url = '/?next=' + self.url
+        redirect_url = reverse_with_next('home', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
 

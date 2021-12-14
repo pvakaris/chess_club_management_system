@@ -36,4 +36,4 @@ class ApplyViewTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'apply.html')
-        self.assertEqual(len(response.context['clubs']), 5)
+        self.assertEqual(len(response.context['clubs']), 11)

@@ -34,5 +34,59 @@
       "location": "Location5",
       "description": "Description5"
     }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 6,
+    "fields": {
+      "name": "Club6",
+      "location": "Location6",
+      "description": "Description6"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 7,
+    "fields": {
+      "name": "Club7",
+      "location": "Location7",
+      "description": "Description7"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 8,
+    "fields": {
+      "name": "Club8",
+      "location": "Location8",
+      "description": "Description8"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 9,
+    "fields": {
+      "name": "Club9",
+      "location": "Location9",
+      "description": "Description9"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 10,
+    "fields": {
+      "name": "Club10",
+      "location": "Location10",
+      "description": "Description10"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 11,
+    "fields": {
+      "name": "Club11",
+      "location": "Location11",
+      "description": "Description11"
+    }
   }
 ]
