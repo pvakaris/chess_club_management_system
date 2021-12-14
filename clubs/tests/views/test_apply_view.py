@@ -31,13 +31,6 @@ class ApplyViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
 
-    # def test_apply_while_already_registered(self):
-    #     self.client.login(username=self.other_user.username, password='Password123')
-    #     response = self.client.get(self.url, follow=True)
-    #     redirect_url = '/?next=' + self.url
-    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-    #     self.assertTemplateUsed(response, 'apply.html')
-
     def test_apply_displays_clubs(self):
         self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url)

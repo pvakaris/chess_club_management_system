@@ -32,7 +32,8 @@ def home(request):
 def feed(request):
     user = request.user
     members = Member.objects.filter(current_user = user)
-    return render(request, 'feed.html', {'user': user, 'myclubs': members})
+    posts = Post.objects.all()
+    return render(request, 'feed.html', {'user': user, 'myclubs': members, 'posts':posts})
 
 @login_prohibited
 def log_in(request):
@@ -125,7 +126,7 @@ def show_user(request, user_id):
     except ObjectDoesNotExist:
         return redirect('member_list')
     else:
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members, 'posts': posts})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
 
 
@@ -185,9 +186,14 @@ def apply_club(request, club_id):
     """Creates a new member of type APPLICANT with the currently logged in user"""
     user = request.user
     club = Club.objects.get(id=club_id)
-    Member.applyClub(user, club)
-    messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
-    return redirect('feed')
+    try:
+        Member.objects.get(current_user=user, club_membership=club)
+        messages.add_message(request, messages.ERROR, f"You're already a member of { club.name }!!")
+    except ObjectDoesNotExist:
+        Member.applyClub(user, club)
+        messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
+    finally:
+        return redirect('feed')
 
 
 

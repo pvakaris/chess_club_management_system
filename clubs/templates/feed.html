@@ -3,7 +3,7 @@
 <div class="container pt-2 pb-2">
   <div class="row">
     <div class="col-6">
-      <h4>Your clubs</h4>
+      <h1>Your clubs</h1>
         {% if clubsCount == 0 %}
           <p>No memberships found. &emsp13;<a href="{% url 'apply' %}" class="label link-primary pt-1">Apply for a membership now.</a></p>
         {% else %}
@@ -24,6 +24,10 @@
           {% endfor %}
         </table>
         {% endif %}
+    </div>
+    <div class="col-6">
+    <h1>All club updates</h1>
+      {% include 'partials/posts_as_table.html' with posts=posts %}
     </div>
   </div>
 </div>

@@ -38,11 +38,18 @@ class ApplyClubViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
 
-    # def test_apply_club_while_already_being_member(self):
-    #     count_before = Member.objects.count()
-    #     response = self.client.get(self.url, follow=True)
-    #     count_after = Member.objects.count()
-    #     self.assertEqual(count_after, count_before)
-    #     redirect_url = reverse('feed')
-    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-    #     self.assertTemplateUsed(response, 'feed.html')
+    def test_apply_club_while_already_being_member(self):
+        self.member = Member.objects.create(
+            user_type=UserTypes.MEMBER,
+            current_user=self.user,
+            club_membership=self.club
+        )
+        self.member.save()
+        self.client.login(username=self.user.username, password='Password123')
+        count_before = Member.objects.count()
+        response = self.client.get(self.url, follow=True)
+        count_after = Member.objects.count()
+        self.assertEqual(count_after, count_before)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
