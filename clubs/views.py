@@ -129,9 +129,8 @@ def show_user(request, user_id):
         return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
    
-
-@member_required
 @login_required
+@member_required
 def club_member(request, club_id, user_id):
     """Shows a club member with respect to what membership type you possess."""
     user = User.objects.get(id=user_id)
