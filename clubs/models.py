@@ -103,7 +103,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.CharField(blank=False,max_length=520,default="")
     created_at = models.DateTimeField(auto_now_add=True)
-    club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
+    club_own = models.ForeignKey(Club, on_delete=models.CASCADE)
     class Meta:
         """Model options."""
 
