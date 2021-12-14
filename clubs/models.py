@@ -1,6 +1,6 @@
 from django.db import connections, models
 from django.db.models.fields import DateTimeField
-from django.db.models import CheckConstraint, Q, F
+from django.db.models import CheckConstraint, Q, F, constraints
 from .user_types import UserTypes
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.validators import RegexValidator
@@ -47,7 +47,7 @@ class Club(models.Model):
 
 class Member(models.Model):
     """Member from a certain club with a user type (applicant, officer, etc.)"""
-    user_type = models.IntegerField(choices=UserTypes.choices(), 
+    user_type = models.IntegerField(choices=UserTypes.choices(),
                                     default=UserTypes.APPLICANT,
                                     validators=[
                                         MinValueValidator(1),
@@ -81,10 +81,30 @@ class Member(models.Model):
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
-    
+
     @classmethod
     def kickOutMember(self, user, club):
         """Kicks a member out from a club"""
         Member.objects.filter(club_membership=club, current_user=user).delete()
 
+    @classmethod
+    def applyClub(self, user, club):
+        Member.objects.create(
+            user_type = UserTypes.APPLICANT,
+            current_user=user,
+            club_membership=club,
+        )
+
 #TODO make all class methods
+
+class Post(models.Model):
+    """Posts by users in their clubs."""
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(blank=False,max_length=280)
+    created_at = models.DateTimeField(auto_now_add=True)
+    club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
+    class Meta:
+        """Model options."""
+
+        ordering = ['-created_at']

@@ -169,3 +169,11 @@ h3.profile-title {
   max-height: 200px;
   overflow-x: hidden;
 }
+
+/*
+ * Menu options
+ */
+.dropdown-menu {
+  max-height: 280px;
+  overflow-y: auto;
+}

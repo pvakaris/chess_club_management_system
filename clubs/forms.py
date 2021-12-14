@@ -1,7 +1,7 @@
 """Forms for the microblogs app."""
 from django import forms
 from django.core.validators import RegexValidator
-from .models import User, Club, Member
+from .models import User, Club, Member,Post
 from django.contrib.auth import authenticate
 
 
@@ -81,13 +81,6 @@ class ClubProfileEditingForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = { 'description': forms.Textarea()}
 
-class ClubApplicationForm(forms.Form):
-    clubs = Club.objects.all()
-    days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in clubs])
-    def __init__(self):
-        self.clubs = Club.objects.all()
-        self.days = forms.ChoiceField(label="Choose a club:", choices=[(x.name, x.name) for x in self.clubs])
-
 
 class ClubCreationForm(forms.ModelForm):
     class Meta:
@@ -128,3 +121,17 @@ class PasswordChangingForm(forms.Form):
         password_confirmation = self.cleaned_data.get('password_confirmation')
         if new_password != password_confirmation:
             self.add_error('password_confirmation', 'Confirmation does not match password.')
+
+class PostForm(forms.ModelForm):
+    """Form to ask owner for post text.
+    The post author must be by the post creator.
+    """
+
+    class Meta:
+        """Form options."""
+
+        model = Post
+        fields = ['message']
+        widgets = {
+            'text': forms.Textarea()
+        }
