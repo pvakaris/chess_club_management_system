@@ -26,7 +26,7 @@ class LogInViewTestCase(TestCase, LogInTester):
     def test_get_log_in_when_logged_in(self):
         self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url, follow=True)
-        redirect_url = '/feed/'
+        redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
 

@@ -16,5 +16,23 @@
       "location": "Location3",
       "description": "Description3"
     }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 4,
+    "fields": {
+      "name": "Club4",
+      "location": "Location4",
+      "description": "Description5"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 5,
+    "fields": {
+      "name": "Club5",
+      "location": "Location5",
+      "description": "Description5"
+    }
   }
 ]
