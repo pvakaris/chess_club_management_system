@@ -32,7 +32,8 @@ def home(request):
 def feed(request):
     user = request.user
     members = Member.objects.filter(current_user = user)
-    return render(request, 'feed.html', {'user': user, 'myclubs': members})
+    posts = Post.objects.all()
+    return render(request, 'feed.html', {'user': user, 'myclubs': members, 'posts':posts})
 
 @login_prohibited
 def log_in(request):
@@ -120,13 +121,12 @@ def edit_club(request, club_id):
 def show_user(request, user_id):
     current_user = request.user
     members = Member.objects.filter(current_user = current_user)
-    posts = Post.objects.filter(author_id=user_id) 
     try:
         user = User.objects.get(id=user_id)
     except ObjectDoesNotExist:
         return redirect('member_list')
     else:
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members, 'posts': posts})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
    
 
