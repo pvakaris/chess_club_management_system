@@ -8,7 +8,7 @@ from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
 from clubs.tests.helpers import LogInTester
 
-class CreateClubTestCase(TestCase, LogInTester):
+class CreateClubViewTestCase(TestCase, LogInTester):
     """Tests of the create club view"""
 
     fixtures = ['clubs/tests/fixtures/user.json']

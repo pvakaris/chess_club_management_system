@@ -4,7 +4,7 @@ from django.conf import settings
 from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
 
-class MemberListTest(TestCase):
+class MemberListViewTest(TestCase):
     fixtures = [
         'clubs/tests/fixtures/user.json',
         'clubs/tests/fixtures/other_user.json',

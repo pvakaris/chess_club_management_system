@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Member, Club
 from clubs.user_types import UserTypes
-from clubs.tests.helpers import LogInTester
 
 class FeedViewTestCase(TestCase):
 
@@ -27,10 +26,11 @@ class FeedViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed.html')
 
-    def test_get_feed_results_in_an_error_when_not_logged_in(self):
+    def test_get_feed_redirects_when_not_logged_in(self):
         redirect_url = '/?next=' + reverse('feed')
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'home.html')
 
     def test_get_feed_for_member_shows_clubs(self):
         self.member = Member.objects.create(

@@ -99,9 +99,8 @@ def edit_profile(request):
         form = UserProfileEditingForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form, 'myclubs':members})
 
-
-@club_owner_required
 @login_required
+@club_owner_required
 def edit_club(request, club_id):
     current_user = request.user
     members = Member.objects.filter(current_user = current_user)
@@ -127,8 +126,8 @@ def show_user(request, user_id):
     else:
         return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
-@member_required
 @login_required
+@member_required
 def club_member(request, club_id, user_id):
     """Shows a club member with respect to what membership type you possess."""
     user = User.objects.get(id=user_id)
@@ -210,8 +209,8 @@ def create_club(request):
         form = ClubCreationForm()
     return render(request, 'create_club.html', {'form': form, 'myclubs': members})
 
-@member_required
 @login_required
+@member_required
 def club_members(request, club_id):
     user = request.user
     club = Club.objects.get(id = club_id)
@@ -229,8 +228,8 @@ def club_members(request, club_id):
     else:
         return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': False, 'request_user_id': user.id, 'myclubs': myClubs})
 
-@staff_required
 @login_required
+@staff_required
 def manage_applicants(request, club_id):
     user = request.user
     myClubs = Member.objects.filter(current_user = user)
@@ -238,8 +237,8 @@ def manage_applicants(request, club_id):
     applicants = Member.objects.filter(club_membership=club, user_type=UserTypes.APPLICANT)
     return render(request, 'manage_applicants.html', {'applicants': applicants, 'club': club, 'applicants_count': applicants.count(), 'myclubs':myClubs})
 
-@club_owner_required
 @login_required
+@club_owner_required
 def manage_officers(request, club_id):
     user = request.user
     myClubs = Member.objects.filter(current_user = user)
@@ -247,8 +246,8 @@ def manage_officers(request, club_id):
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
     return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count(), 'myclubs':myClubs})
 
-@staff_required
 @login_required
+@staff_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
     club = Club.objects.get(id = club_id)
@@ -262,8 +261,8 @@ def promote_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@staff_required
 @login_required
+@staff_required
 def kickout_member(request, club_id, user_id):
     """View that kicks a member out of the current club"""
     club = Club.objects.get(id = club_id)
@@ -277,8 +276,8 @@ def kickout_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@club_owner_required
 @login_required
+@club_owner_required
 def demote_officer(request, club_id, user_id):
     """View to demote an officer to a member"""
     club = Club.objects.get(id = club_id)
@@ -292,9 +291,8 @@ def demote_officer(request, club_id, user_id):
     else:
         return redirect('feed')
 
-
-@staff_required
 @login_required
+@staff_required
 def accept_application(request, club_id, user_id):
     """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)
@@ -308,8 +306,8 @@ def accept_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@staff_required
 @login_required
+@staff_required
 def decline_application(request, club_id, user_id):
     """Declines an applicant"""
     club = Club.objects.get(id = club_id)
@@ -323,8 +321,8 @@ def decline_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@club_owner_required
 @login_required
+@club_owner_required
 def make_owner(request, club_id, user_id):
     """Transfer ownership to other club member"""
     club = Club.objects.get(id = club_id)

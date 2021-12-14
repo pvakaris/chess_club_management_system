@@ -7,6 +7,8 @@ from clubs.models import User
 
 class SignUpViewTestCase(TestCase):
 
+    fixtures = ['clubs/tests/fixtures/other_user.json']
+
     def setUp(self):
         self.url = reverse('sign_up')
         self.form_input = {
@@ -19,6 +21,7 @@ class SignUpViewTestCase(TestCase):
             'new_password': 'Password123',
             'password_confirmation': 'Password123'
         }
+        self.other_user = User.objects.get(username='janedoe@example.org')
 
     def test_sign_up_url(self):
         self.assertEqual(self.url, '/sign_up/')
@@ -30,6 +33,13 @@ class SignUpViewTestCase(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertFalse(form.is_bound)
+
+    def test_get_sign_up_when_logged_in(self):
+        self.client.login(username=self.other_user.username, password='Password123')
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
 
     def test_unsuccessful_sign_up(self):
         self.form_input['username'] = 'Not_an_email@'

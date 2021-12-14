@@ -4,7 +4,7 @@ from clubs.forms import UserProfileEditingForm
 from clubs.models import User
 from clubs.tests.helpers import LogInTester
 
-class EditProfileViewTestCase(TestCase, LogInTester):
+class EditProfileViewTestCase(TestCase):
 
     fixtures = ['clubs/tests/fixtures/user.json']
 
@@ -25,7 +25,6 @@ class EditProfileViewTestCase(TestCase, LogInTester):
 
     def test_get_edit_profile(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
@@ -38,7 +37,6 @@ class EditProfileViewTestCase(TestCase, LogInTester):
 
     def test_successful_edit_profile(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         response = self.client.post(self.url, self.form_input, follow=True)
         redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -46,7 +44,6 @@ class EditProfileViewTestCase(TestCase, LogInTester):
 
     def test_successful_edit_profile_blank_bio(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['bio'] = ''
         response = self.client.post(self.url, self.form_input, follow=True)
         redirect_url = reverse('feed')
@@ -55,40 +52,50 @@ class EditProfileViewTestCase(TestCase, LogInTester):
 
     def test_unsuccessful_edit_profile_blank_username(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['username'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, UserProfileEditingForm))
+        self.assertTrue(form.is_bound)
 
     def test_unsuccessful_edit_profile_blank_first_name(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['first_name'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, UserProfileEditingForm))
+        self.assertTrue(form.is_bound)
 
     def test_unsuccessful_edit_profile_blank_last_name(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['last_name'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, UserProfileEditingForm))
+        self.assertTrue(form.is_bound)
 
     def test_unsuccessful_edit_profile_negative_chess_experience(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['chess_experience'] = -1
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, UserProfileEditingForm))
+        self.assertTrue(form.is_bound)
 
     def test_unsuccessful_edit_profile_blank_personal_statement(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.assertTrue(self._is_logged_in())
         self.form_input['personal_statement'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_profile.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, UserProfileEditingForm))
+        self.assertTrue(form.is_bound)

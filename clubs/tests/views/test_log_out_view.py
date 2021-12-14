@@ -3,7 +3,7 @@ from django.test import TestCase
 from clubs.models import User
 from clubs.tests.helpers import LogInTester
 
-class LogInViewTestCase(TestCase, LogInTester):
+class LogOutViewTestCase(TestCase, LogInTester):
 
     fixtures = ['clubs/tests/fixtures/user.json']
 
