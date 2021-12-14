@@ -98,4 +98,3 @@ class MemberListViewTest(TestCase):
                 current_user=User.objects.get(username=f'user{user_id}@test.org'),
                 club_membership=self.club
             )
-"""Needs to be changed to member list and actual code changed a bit more"""

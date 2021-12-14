@@ -344,8 +344,8 @@ def make_owner(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@club_owner_required
 @login_required
+@club_owner_required
 def post_messages(request,club_id):
     if request.user.is_authenticated:
         current_user = request.user
