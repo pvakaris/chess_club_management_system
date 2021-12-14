@@ -101,7 +101,7 @@ class Post(models.Model):
     """Posts by users in their clubs."""
 
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.CharField(blank=False,max_length=280)
+    message = models.CharField(blank=False,max_length=520,default="")
     created_at = models.DateTimeField(auto_now_add=True)
     club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
     class Meta:
