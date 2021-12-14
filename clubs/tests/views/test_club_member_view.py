@@ -4,7 +4,7 @@ from clubs.models import User, Club, Member
 from clubs.tests.helpers import reverse_with_next
 from clubs.user_types import UserTypes
 
-class ShowUserTest(TestCase):
+class ClubMemberViewTest(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/user.json',
