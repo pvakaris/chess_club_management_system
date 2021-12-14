@@ -47,7 +47,7 @@ class Club(models.Model):
 
 class Member(models.Model):
     """Member from a certain club with a user type (applicant, officer, etc.)"""
-    user_type = models.IntegerField(choices=UserTypes.choices(), 
+    user_type = models.IntegerField(choices=UserTypes.choices(),
                                     default=UserTypes.APPLICANT,
                                     validators=[
                                         MinValueValidator(1),
@@ -81,7 +81,7 @@ class Member(models.Model):
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
-    
+
     @classmethod
     def kickOutMember(self, user, club):
         """Kicks a member out from a club"""
@@ -106,5 +106,5 @@ class Post(models.Model):
     club_member = models.ForeignKey(Club, on_delete=models.CASCADE)
     class Meta:
         """Model options."""
-        
+
         ordering = ['-created_at']

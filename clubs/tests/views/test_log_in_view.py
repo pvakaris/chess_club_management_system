@@ -23,6 +23,13 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)
 
+    def test_get_log_in_when_logged_in(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
+
     def test_unsuccessful_log_in_with_no_password(self):
         form_input = { 'username': 'johndoe@example.org', 'password': '' }
         response = self.client.post(self.url, form_input)
