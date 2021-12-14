@@ -21,6 +21,7 @@ from system.settings import REDIRECT_URL_WHEN_LOGGED_IN
 from django.views import View
 from django.urls import reverse
 from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage,InvalidPage
 
 
 @login_prohibited
@@ -31,9 +32,20 @@ def home(request):
 @login_required #TODO show the amount of club members
 def feed(request):
     user = request.user
+    clubs = Club.objects.filter(
+    id__in=Member.objects.filter(
+        current_user=user).exclude(user_type = 4).values("club_membership")
+    ).values("id")
+    posts = Post.objects.filter(club_member_id__in=clubs)
     members = Member.objects.filter(current_user = user)
-    posts = Post.objects.all()
-    return render(request, 'feed.html', {'user': user, 'myclubs': members, 'posts':posts})
+    paginator = Paginator(posts, 10)
+    try:
+        page_number = request.GET.get('page', '1')
+        page = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage, InvalidPage):
+        page = paginator.page(1)
+
+    return render(request, 'feed.html', {'user': user, 'myclubs': members,'page':page})
 
 @login_prohibited
 def log_in(request):
@@ -163,9 +175,15 @@ def show_club(request, club_id):
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'posts': posts})
-
+        paginator = Paginator(posts, 10)
+        try:
+            page_number = request.GET.get('page', '1')
+            page = paginator.page(page_number)
+        except (PageNotAnInteger, EmptyPage, InvalidPage):
+            page = paginator.page(1)
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'page':page})
 #TODO change this
+
 @login_required
 def apply(request):
     """view to apply to a club."""
