@@ -74,10 +74,12 @@ def make_owner(request, club_id, user_id):
 def apply_club(request, club_id):
     """View that creates a new applicant for the selected club"""
     user = request.user
-    club = Club.objects.get(id=club_id)
     try:
+        club = Club.objects.get(id=club_id)
         Member.objects.get(current_user=user, club_membership=club)
         messages.add_message(request, messages.ERROR, f"You're already a member of { club.name }!!")
+    except Club.DoesNotExist:
+        pass
     except ObjectDoesNotExist:
         Member.applyClub(user, club)
         messages.add_message(request, messages.SUCCESS, f"You just applied to { club.name }!!")
