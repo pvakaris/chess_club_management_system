@@ -138,6 +138,7 @@ REDIRECT_WHEN_NOT_CLUB_OWNER = 'feed'
 # For pagination
 MEMBERS_PER_PAGE = 10
 CLUBS_PER_PAGE = 10
+POSTS_PER_PAGE = 10
 
 # For @login_required decorator
 LOGIN_URL = 'home'

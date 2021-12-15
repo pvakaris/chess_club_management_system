@@ -4,10 +4,11 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from clubs.models import User, Member, Club
-from clubs.helpers import club_owner_required, staff_required
+from clubs.helpers import club_owner_required, staff_required, valid_user_required
 from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
+@valid_user_required
 @club_owner_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
@@ -18,6 +19,7 @@ def promote_member(request, club_id, user_id):
     return redirect('club_members', club_id)
 
 @login_required
+@valid_user_required
 @club_owner_required
 def kickout_member(request, club_id, user_id):
     """View that kicks a member out"""
@@ -28,6 +30,7 @@ def kickout_member(request, club_id, user_id):
     return redirect('club_members', club_id)
 
 @login_required
+@valid_user_required
 @club_owner_required
 def demote_officer(request, club_id, user_id):
     """View that demote an officer to a member"""
@@ -38,6 +41,7 @@ def demote_officer(request, club_id, user_id):
     return redirect('manage_officers', club_id)
 
 @login_required
+@valid_user_required
 @staff_required
 def accept_application(request, club_id, user_id):
     """View that accept an applicant and make member"""
@@ -49,6 +53,7 @@ def accept_application(request, club_id, user_id):
 
 
 @login_required
+@valid_user_required
 @staff_required
 def decline_application(request, club_id, user_id):
     """View that declines an applicant"""
@@ -59,6 +64,7 @@ def decline_application(request, club_id, user_id):
     return redirect('manage_applicants', club_id)
 
 @login_required
+@valid_user_required
 @club_owner_required
 def make_owner(request, club_id, user_id):
     """View that transfer ownership to other club member"""
