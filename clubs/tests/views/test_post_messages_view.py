@@ -1,3 +1,4 @@
+
 """Test of the post messages view."""
 
 from django.contrib.auth.hashers import check_password
@@ -38,10 +39,27 @@ class PostMessagesViewTestCase(TestCase, LogInTester):
     def test_post_messages_url(self):
         self.assertEqual(self.url, f'/post_messages/{self.club.id}')
 
+    def test_successful_get_post_messages(self):
+        self.client.login(username=self.owner.username, password="Password123")
+        post_count_before = Post.objects.count()
+        response = self.client.get(self.url, follow=True)
+        post_count_after = Post.objects.count()
+        self.assertEqual(post_count_before, post_count_after)
+        self.assertEqual(response.status_code,200)
+        self.assertTemplateUsed(response, 'post_messages.html')
     
     def test_get_post_messages_without_login(self):
         post_count_before = Post.objects.count()
         response = self.client.get(self.url, follow=True)
+        post_count_after = Post.objects.count()
+        self.assertEqual(post_count_before, post_count_after)
+        redirect_url = '/?next=' + self.url
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'home.html')
+    
+    def test_post_messages_without_login(self):
+        post_count_before = Post.objects.count()
+        response = self.client.post(self.url, follow=True)
         post_count_after = Post.objects.count()
         self.assertEqual(post_count_before, post_count_after)
         redirect_url = '/?next=' + self.url
@@ -76,12 +94,20 @@ class PostMessagesViewTestCase(TestCase, LogInTester):
     def test_post_messages_without_owner_permission(self):
         self.client.login(username=self.officer.username, password='Password123')
         officer_count_before = Post.objects.count()
-        response = self.client.get(self.url, follow=True)
+        response = self.client.post(self.url, follow=True)
         officer_count_after = Post.objects.count()
         self.assertEqual(officer_count_before, officer_count_after)
         redirect_url = reverse('show_club', kwargs={'club_id':f'{self.club.id}'})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_club.html')
 
-    
+    def test_get_post_messages_without_owner_permission(self):
+        self.client.login(username=self.officer.username, password='Password123')
+        officer_count_before = Post.objects.count()
+        response = self.client.get(self.url, follow=True)
+        officer_count_after = Post.objects.count()
+        self.assertEqual(officer_count_before, officer_count_after)
+        redirect_url = reverse('show_club', kwargs={'club_id':f'{self.club.id}'})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'show_club.html')
     

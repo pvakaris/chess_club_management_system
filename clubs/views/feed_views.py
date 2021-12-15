@@ -2,8 +2,8 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
 from clubs.models import Member, Club,Post
+
 
 class FeedView(LoginRequiredMixin, ListView):
     """Class-based generic view for displaying a view."""
@@ -30,3 +30,4 @@ class FeedView(LoginRequiredMixin, ListView):
         context['user'] = user
         context['myclubs'] = Member.objects.filter(current_user = user)
         return context
+
