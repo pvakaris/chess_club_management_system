@@ -53,3 +53,14 @@ class ApplyClubViewTestCase(TestCase):
         redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
+
+    def test_apply_to_invalid_club_redirects(self):
+        self.client.login(username=self.user.username, password='Password123')
+        count_before = Member.objects.count()
+        self.url = reverse('apply_club', kwargs={'club_id': 9999})
+        response = self.client.get(self.url, follow=True)
+        count_after = Member.objects.count()
+        self.assertEqual(count_after, count_before)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')

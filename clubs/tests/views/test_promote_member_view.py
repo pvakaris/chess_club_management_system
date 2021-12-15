@@ -74,3 +74,17 @@ class PromoteMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_invalid_id_for_promote_member_redirects(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        officer_count_before = Member.objects.filter(user_type=UserTypes.OFFICER).count()
+        self.url = reverse('accept_application', kwargs={
+            'club_id': self.club.id,
+            'user_id': self.member.id+9999
+        })
+        response = self.client.get(self.url, follow=True)
+        officer_count_after = Member.objects.filter(user_type=UserTypes.OFFICER).count()
+        self.assertEqual(officer_count_before, officer_count_after)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')

@@ -25,7 +25,7 @@ class ShowClubViewTest(TestCase):
 
     def test_club_member_url(self):
         self.assertEqual(self.url,f'/club/{self.club.id}')
-    
+
     def test_get_show_club_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')
         url = reverse('show_club', kwargs={'club_id': self.club.id+9999})
@@ -50,10 +50,7 @@ class ShowClubViewTest(TestCase):
         self.assertContains(response, "John Doe")
         self.assertContains(response, "johndoe@example.org")
 
-
-
     def test_get_user_list_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('home', self.url)
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-

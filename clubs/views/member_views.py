@@ -6,12 +6,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from clubs.models import User, Member, Club
-from clubs.helpers import club_owner_required, member_required, staff_required
+from clubs.helpers import club_owner_required, member_required, staff_required, valid_user_required
 from clubs.user_types import UserTypes
 from django.db.models import Q
 
 
 @login_required
+@valid_user_required
 @member_required
 def club_member(request, club_id, user_id):
     """View that shows a club member"""
