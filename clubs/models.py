@@ -61,6 +61,7 @@ class Member(models.Model):
             models.UniqueConstraint(fields=['club_membership'], condition=Q(user_type=UserTypes.CLUB_OWNER), name="there can't exist more than one club owner")
         ]
 
+    @classmethod
     def acceptApplicant(self, user, club):
         """Converts an applicant to a member"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
@@ -70,11 +71,13 @@ class Member(models.Model):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.OFFICER)
 
+    @classmethod
     def transferOwnership(self, new_club_owner, old_club_owner, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=old_club_owner).update(user_type=UserTypes.OFFICER)
         Member.objects.filter(club_membership=club, current_user=new_club_owner).update(user_type=UserTypes.CLUB_OWNER)
-
+    
+    @classmethod
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
@@ -91,6 +94,10 @@ class Member(models.Model):
             current_user=user,
             club_membership=club,
         )
+    
+    @classmethod
+    def decline_application(self, user, club):
+        Member.objects.filter(club_membership=club, current_user=user).delete()
 
 #TODO make all class methods
 
