@@ -36,7 +36,7 @@ def feed(request):
     id__in=Member.objects.filter(
         current_user=user).exclude(user_type = 4).values("club_membership")
     ).values("id")
-    posts = Post.objects.filter(club_own_id__in=clubs)
+    posts = Post.objects.filter(club_own_id__in=clubs).order_by('id')
     members = Member.objects.filter(current_user = user)
     paginator = Paginator(posts, 10)
     try:
@@ -161,7 +161,7 @@ def show_club(request, club_id):
     try:
         club = Club.objects.get(id=club_id)
         club_members = Member.objects.filter(club_membership=club).count()
-        posts = Post.objects.filter(club_own_id=club_id)
+        posts = Post.objects.filter(club_own_id=club_id).order_by('id')
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
@@ -364,22 +364,25 @@ def make_owner(request, club_id, user_id):
 @login_required
 @club_owner_required
 def post_messages(request,club_id):
-    if request.user.is_authenticated:
-        current_user = request.user
-        club = Club.objects.get(id = club_id)
-        if request.method == 'POST':
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            current_user = request.user
+            club = Club.objects.get(id = club_id)
             form = PostForm(request.POST)
             if form.is_valid():
                 message = form.cleaned_data.get('message')
                 post = Post.objects.create(author=current_user, message=message,club_own=club)
-                messages.add_message(request, messages.SUCCESS, "Post created!")
+                messages.add_message(request, messages.SUCCESS, "Post was created!")
                 return redirect('feed')
             else:
                 return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
-        form = PostForm()
-        return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+        else:
+            form = PostForm()
+            return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
     else:
-        return HttpResponseForbidden()
+        if request.user.is_authenticated:
+            form = PostForm()
+            return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
 
 
 class ClubListView(LoginRequiredMixin, ListView):
