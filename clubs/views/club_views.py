@@ -20,7 +20,7 @@ def show_club(request, club_id):
     try:
         club = Club.objects.get(id=club_id)
         club_members = Member.objects.filter(club_membership=club).count()
-        posts = Post.objects.filter(club_own_id=club_id).order_by('id')
+        posts = Post.objects.filter(club_own_id=club_id).order_by('-id')
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
