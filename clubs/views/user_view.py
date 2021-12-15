@@ -11,10 +11,6 @@ from clubs.models import User, Member
 def show_user(request, user_id):
     """View that shows individual user details."""
     current_user = request.user
-    try:
-        members = Member.objects.filter(current_user = current_user)
-        user = User.objects.get(id=user_id)
-    except ObjectDoesNotExist:
-        return redirect('member_list')
-    else:
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+    members = Member.objects.filter(current_user = current_user)
+    user = User.objects.get(id=user_id)
+    return render(request, 'show_user.html', {'user': user, 'myclubs':members})

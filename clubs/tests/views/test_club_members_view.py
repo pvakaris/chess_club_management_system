@@ -109,8 +109,3 @@ class ClubMembersViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club_member_list.html')
         self.assertContains(response, "Jane Doe")
-
-#TODO test_get_club_members_as_member
-#* as member
-#* as club owner
-#* as officer

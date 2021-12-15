@@ -62,5 +62,3 @@ class ManageApplicantsViewTestCase(TestCase):
         redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
-
-# pagination?
