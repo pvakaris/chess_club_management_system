@@ -9,19 +9,14 @@ from clubs.user_types import UserTypes
 from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
-@staff_required
+@club_owner_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
     club = Club.objects.get(id = club_id)
     user = User.objects.get(id = user_id)
-    request_user = request.user
-    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
-    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
-        Member.promoteMember(user, club)
-        messages.add_message(request, messages.SUCCESS, "Member was promoted successfully!")
-        return redirect('club_members', club_id)
-    else:
-        return redirect('feed')
+    Member.promoteMember(user, club)
+    messages.add_message(request, messages.SUCCESS, "Member was promoted successfully!")
+    return redirect('club_members', club_id)
 
 @login_required
 @staff_required
