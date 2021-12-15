@@ -21,9 +21,6 @@ class User(AbstractUser):
         """Model options."""
         ordering = ['-created_at']
 
-    def __str__(self):
-        return self.email
-
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
