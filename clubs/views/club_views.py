@@ -44,13 +44,7 @@ def show_club(request, club_id):
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        paginator = Paginator(posts, 10)
-        try:
-            page_number = request.GET.get('page', '1')
-            page = paginator.page(page_number)
-        except (PageNotAnInteger, EmptyPage, InvalidPage):
-            page = paginator.page(1)
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'page':page})
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'posts':posts})
 
 
 @login_required
