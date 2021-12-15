@@ -8,6 +8,7 @@ from clubs.models import Member, Club,Post
 class FeedView(LoginRequiredMixin, ListView):
     """Class-based generic view for displaying a view."""
 
+    login_url = '/?next=/feed/'
     model = Post
     template_name = "feed.html"
     context_object_name = 'posts'
@@ -30,4 +31,3 @@ class FeedView(LoginRequiredMixin, ListView):
         context['user'] = user
         context['myclubs'] = Member.objects.filter(current_user = user)
         return context
-

@@ -14,13 +14,13 @@ class ClubMembersViewTest(TestCase):
     ]
 
     def setUp(self):
-        self.user = User.objects.get(username='johndoe@example.org')
+        self.owner = User.objects.get(username='johndoe@example.org')
         self.other_user = User.objects.get(username='janedoe@example.org')
         self.club = Club.objects.get(name='Club')
         self.url = reverse('club_members', kwargs={'club_id': self.club.id})
-        self.member = Member.objects.create(
+        self.ownership = Member.objects.create(
             user_type = UserTypes.CLUB_OWNER,
-            current_user=self.user,
+            current_user=self.owner,
             club_membership=self.club,
         )
 
@@ -33,7 +33,7 @@ class ClubMembersViewTest(TestCase):
         redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_redirect_when_applicant_of_club(self):        
+    def test_redirect_when_applicant_of_club(self):
         self.client.login(username=self.other_user.username, password='Password123')
         Member.objects.create(
             user_type = UserTypes.APPLICANT,
@@ -50,7 +50,7 @@ class ClubMembersViewTest(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_club_members_with_invalid_id(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(username=self.owner.username, password='Password123')
         url = reverse('club_members', kwargs={'club_id': self.club.id+9999})
         response = self.client.get(url, follow=True)
         response_url = reverse('feed')
@@ -89,24 +89,25 @@ class ClubMembersViewTest(TestCase):
                 club_membership=self.club
             )
 
-    def test_get_user_list_as_staff(self):
-        self.client.login(username=self.user.username, password='Password123')
-        url = reverse('club_member', kwargs={'club_id': self.club.id, 'user_id': self.user.id})
+    def test_get_user_list_as_owner(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        url = reverse('club_member', kwargs={'club_id': self.club.id, 'user_id': self.owner.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_user_full.html')
         self.assertContains(response, "John Doe")
 
-        self.client.login(username=self.user.username, password='Password123')
-        Member.objects.create(
+    def test_get_member_list_as_officer(self):
+        self.client.login(username=self.other_user.username, password='Password123')
+        self.office = Member.objects.create(
             user_type = UserTypes.OFFICER,
             current_user=self.other_user,
             club_membership=self.club,
         )
-        url = reverse('club_member', kwargs={'club_id': self.club.id, 'user_id': self.other_user.id})
-        response = self.client.get(url)
+        self.office.save()
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_user_full.html')
+        self.assertTemplateUsed(response, 'club_member_list.html')
         self.assertContains(response, "Jane Doe")
 
 #TODO test_get_club_members_as_member
