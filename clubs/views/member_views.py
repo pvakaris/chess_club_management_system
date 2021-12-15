@@ -1,27 +1,14 @@
 """Member related views"""
-from logging import exception
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
-from django.contrib import messages
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, render
-import logging
-from clubs.forms import LogInForm, SignUpForm, UserProfileEditingForm, ClubProfileEditingForm, ClubCreationForm, PasswordChangingForm, PostForm
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from clubs.models import User, Member, Club,Post
-from clubs.helpers import login_prohibited, club_owner_required, member_required, staff_required
+from clubs.models import User, Member, Club
+from clubs.helpers import club_owner_required, member_required, staff_required
 from clubs.user_types import UserTypes
-from django.http import HttpResponseForbidden, Http404, HttpResponseRedirect
-from django.utils.decorators import method_decorator
-from system.settings import REDIRECT_URL_WHEN_LOGGED_IN
-from django.views import View
-from django.urls import reverse
 from django.db.models import Q
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage,InvalidPage
 
 
 @login_required
@@ -31,17 +18,17 @@ def club_member(request, club_id, user_id):
     user = User.objects.get(id=user_id)
     club = Club.objects.get(id=club_id)
     current_user = request.user
-    members = Member.objects.filter(current_user = current_user)
+    myClubs = Member.objects.filter(current_user = current_user)
     member = Member.objects.get(current_user=current_user, club_membership=club)
     if(member.user_type == UserTypes.MEMBER):
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+        return render(request, 'show_user.html', {'user': user, 'myclubs':myClubs})
     else:
-        return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
+        return render(request, 'show_user_full.html', {'user': user, 'myclubs':myClubs})
 
 @login_required
 @member_required
 def club_members(request, club_id):
-    """View that shows all club member"""
+    """View that shows all club members"""
     user = request.user
     club = Club.objects.get(id = club_id)
     members = Member.objects.filter(
@@ -103,7 +90,7 @@ class MemberListView(LoginRequiredMixin, ListView):
         return members
 
     def get_context_data(self, **kwargs):
-        """Return context data, including new post form."""
+        """Return context data"""
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context['myclubs'] = Member.objects.filter(current_user = user)
