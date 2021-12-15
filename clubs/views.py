@@ -36,7 +36,7 @@ def feed(request):
     id__in=Member.objects.filter(
         current_user=user).exclude(user_type = 4).values("club_membership")
     ).values("id")
-    posts = Post.objects.filter(club_member_id__in=clubs)
+    posts = Post.objects.filter(club_own_id__in=clubs).order_by('id')
     members = Member.objects.filter(current_user = user)
     paginator = Paginator(posts, 10)
     try:
@@ -112,9 +112,8 @@ def edit_profile(request):
         form = UserProfileEditingForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form, 'myclubs':members})
 
-
-@club_owner_required
 @login_required
+@club_owner_required
 def edit_club(request, club_id):
     current_user = request.user
     members = Member.objects.filter(current_user = current_user)
@@ -140,7 +139,8 @@ def show_user(request, user_id):
     else:
         return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
-   
+
+
 @login_required
 @member_required
 def club_member(request, club_id, user_id):
@@ -161,7 +161,7 @@ def show_club(request, club_id):
     try:
         club = Club.objects.get(id=club_id)
         club_members = Member.objects.filter(club_membership=club).count()
-        posts = Post.objects.filter(club_member_id=club_id)
+        posts = Post.objects.filter(club_own_id=club_id).order_by('id')
     except ObjectDoesNotExist:
         return redirect('club_list')
     else:
@@ -196,7 +196,7 @@ def apply(request):
             Member.objects.get(current_user=user, club_membership=club)
         except ObjectDoesNotExist:
             clubset.add(club)
-    return render(request, 'apply.html', {'clubs': clubset, 'myclubs':members}) 
+    return render(request, 'apply.html', {'clubs': clubset, 'myclubs':members})
 
 @login_required
 def apply_club(request, club_id):
@@ -228,7 +228,8 @@ def create_club(request):
                 club_membership=club
             )
             messages.add_message(request, messages.SUCCESS, "Club was created successfully!")
-        return redirect('feed')
+            return redirect('feed')
+        return redirect('create_club')
     else:
         form = ClubCreationForm()
     return render(request, 'create_club.html', {'form': form, 'myclubs': members})
@@ -252,8 +253,8 @@ def club_members(request, club_id):
     else:
         return render(request, 'club_member_list.html', {'members' : members, 'club': club, 'is_owner': False, 'request_user_id': user.id, 'myclubs': myClubs})
 
-@staff_required
 @login_required
+@staff_required
 def manage_applicants(request, club_id):
     user = request.user
     myClubs = Member.objects.filter(current_user = user)
@@ -261,8 +262,8 @@ def manage_applicants(request, club_id):
     applicants = Member.objects.filter(club_membership=club, user_type=UserTypes.APPLICANT)
     return render(request, 'manage_applicants.html', {'applicants': applicants, 'club': club, 'applicants_count': applicants.count(), 'myclubs':myClubs})
 
-@club_owner_required
 @login_required
+@club_owner_required
 def manage_officers(request, club_id):
     user = request.user
     myClubs = Member.objects.filter(current_user = user)
@@ -270,9 +271,8 @@ def manage_officers(request, club_id):
     officers = Member.objects.filter(club_membership=club, user_type=UserTypes.OFFICER)
     return render(request, 'manage_officers.html', {'officers' : officers, 'club' : club, 'officers_count': officers.count(), 'myclubs':myClubs})
 
-#TODO refactor
-@staff_required
 @login_required
+@staff_required
 def promote_member(request, club_id, user_id):
     """View that promotes a member to an officer"""
     club = Club.objects.get(id = club_id)
@@ -286,9 +286,8 @@ def promote_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
-#TODO refactor
-@staff_required
 @login_required
+@staff_required
 def kickout_member(request, club_id, user_id):
     """View that kicks a member out of the current club"""
     club = Club.objects.get(id = club_id)
@@ -302,9 +301,8 @@ def kickout_member(request, club_id, user_id):
     else:
         return redirect('feed')
 
-#TODO refactor
-@club_owner_required
 @login_required
+@club_owner_required
 def demote_officer(request, club_id, user_id):
     """View to demote an officer to a member"""
     club = Club.objects.get(id = club_id)
@@ -318,9 +316,8 @@ def demote_officer(request, club_id, user_id):
     else:
         return redirect('feed')
 
-#TODO refactor
-@staff_required
 @login_required
+@staff_required
 def accept_application(request, club_id, user_id):
     """View to accept an applicant and make him/her a member"""
     club = Club.objects.get(id = club_id)
@@ -334,9 +331,8 @@ def accept_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
-#TODO refactor
-@staff_required
 @login_required
+@staff_required
 def decline_application(request, club_id, user_id):
     """Declines an applicant"""
     club = Club.objects.get(id = club_id)
@@ -350,9 +346,8 @@ def decline_application(request, club_id, user_id):
     else:
         return redirect('feed')
 
-#TODO refactor
-@club_owner_required
 @login_required
+@club_owner_required
 def make_owner(request, club_id, user_id):
     """Transfer ownership to other club member"""
     club = Club.objects.get(id = club_id)
@@ -366,25 +361,28 @@ def make_owner(request, club_id, user_id):
     else:
         return redirect('feed')
 
-@club_owner_required
 @login_required
+@club_owner_required
 def post_messages(request,club_id):
-    if request.user.is_authenticated:
-        current_user = request.user
-        club = Club.objects.get(id = club_id)
-        if request.method == 'POST':
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            current_user = request.user
+            club = Club.objects.get(id = club_id)
             form = PostForm(request.POST)
             if form.is_valid():
                 message = form.cleaned_data.get('message')
-                post = Post.objects.create(author=current_user, message=message,club_member=club)
-                messages.add_message(request, messages.SUCCESS, "Post created!")
+                post = Post.objects.create(author=current_user, message=message,club_own=club)
+                messages.add_message(request, messages.SUCCESS, "Post was created!")
                 return redirect('feed')
             else:
                 return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
-        form = PostForm()
-        return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
+        else:
+            form = PostForm()
+            return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
     else:
-        return HttpResponseForbidden()
+        if request.user.is_authenticated:
+            form = PostForm()
+            return render(request, 'post_messages.html', {'form': form,'club_id':club_id})
 
 
 class ClubListView(LoginRequiredMixin, ListView):
