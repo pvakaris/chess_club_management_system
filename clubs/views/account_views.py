@@ -2,18 +2,21 @@
 from logging import exception
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
+from django.urls import reverse
 import logging
 from clubs.forms import PasswordChangingForm, UserProfileEditingForm, SignUpForm, ClubProfileEditingForm
 from django.contrib.auth.decorators import login_required
 from clubs.models import User, Member, Club,Post
 from clubs.helpers import login_prohibited, club_owner_required
+from .mixins import LoginProhibitedMixin
 
 @login_required
 def password(request):
@@ -36,7 +39,6 @@ def password(request):
     form = PasswordChangingForm()
     return render(request, 'password.html', {'form': form, 'myclubs':members})
 
-
 @login_required
 def edit_profile(request):
     """View to update logged-in user's profile."""
@@ -51,19 +53,21 @@ def edit_profile(request):
     else:
         form = UserProfileEditingForm(instance=current_user)
     return render(request, 'edit_profile.html', {'form': form, 'myclubs':members})
-
-@login_prohibited
-def sign_up(request):
+    
+class SignUpView(LoginProhibitedMixin, FormView):
     """View that signs up user."""
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('feed')
-    else:
-        form = SignUpForm()
-    return render(request, 'sign_up.html', {'form': form})
+
+    form_class = SignUpForm
+    template_name = "sign_up.html"
+    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+
+    def form_valid(self, form):
+        self.object = form.save()
+        login(self.request, self.object)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 @login_required
 @club_owner_required
