@@ -66,13 +66,9 @@ def make_owner(request, club_id, user_id):
     club = Club.objects.get(id = club_id)
     new_club_owner = User.objects.get(id = user_id)
     old_club_owner = request.user
-    request_user_membership = Member.objects.get(club_membership=club, current_user=old_club_owner)
-    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
-        request_user_membership.transferOwnership(new_club_owner, old_club_owner, club)
-        messages.add_message(request, messages.SUCCESS, "Club ownership was reassigned!")
-        return redirect('show_club', club_id)
-    else:
-        return redirect('feed')
+    Member.transferOwnership(new_club_owner, old_club_owner, club)
+    messages.add_message(request, messages.SUCCESS, "Club ownership was reassigned!")
+    return redirect('show_club', club_id)
 
 @login_required
 def apply_club(request, club_id):
