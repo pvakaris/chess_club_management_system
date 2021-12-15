@@ -19,19 +19,14 @@ def promote_member(request, club_id, user_id):
     return redirect('club_members', club_id)
 
 @login_required
-@staff_required
+@club_owner_required
 def kickout_member(request, club_id, user_id):
     """View that kicks a member out"""
     club = Club.objects.get(id = club_id)
-    request_user = request.user
-    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
-    if request_user_membership.user_type == UserTypes.CLUB_OWNER:
-        user = User.objects.get(id = user_id)
-        Member.kickOutMember(user, club)
-        messages.add_message(request, messages.SUCCESS, "Member was removed from the club!")
-        return redirect('club_members', club_id)
-    else:
-        return redirect('feed')
+    user = User.objects.get(id = user_id)
+    Member.kickOutMember(user, club)
+    messages.add_message(request, messages.SUCCESS, "Member was removed from the club!")
+    return redirect('club_members', club_id)
 
 @login_required
 @club_owner_required
