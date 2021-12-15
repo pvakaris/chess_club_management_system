@@ -28,6 +28,7 @@ def club_owner_required(view_function):
                 return redirect('show_club', club_id)
         except ObjectDoesNotExist:
             return redirect('feed') 
+
     return modified_view_function
 
 def staff_required(view_function):
@@ -42,7 +43,7 @@ def staff_required(view_function):
                 else:
                     return view_function(request, club_id)
             else:
-                return redirect('show_club', club_id) 
+                return redirect('show_club', club_id)
         except ObjectDoesNotExist:
             return redirect('feed')   
     return modified_view_function
@@ -59,7 +60,7 @@ def member_required(view_function):
                 else:
                     return view_function(request, club_id)
             else:
-                return redirect('show_club', club_id) 
+                return redirect('show_club', club_id)
         except ObjectDoesNotExist:
             return redirect('feed')
     return modified_view_function
