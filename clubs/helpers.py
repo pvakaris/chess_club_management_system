@@ -13,10 +13,24 @@ def login_prohibited(view_function):
             return view_function(request)
     return modified_view_function
 
+
+def valid_user_required(view_function):
+    def modified_view_function(request,  user_id, club_id=None):
+        try:
+            User.objects.get(id=user_id)
+            if club_id:
+                return view_function(request, club_id, user_id)
+            else:
+                return view_function(request, user_id)
+        except ObjectDoesNotExist:
+            return redirect('feed')
+    return modified_view_function
+
+
 def club_owner_required(view_function):
     def modified_view_function(request, club_id, user_id=None):
-        user = request.user
         try:
+            user = request.user
             club = Club.objects.get(id=club_id)
             member = Member.objects.get(current_user=user, club_membership=club)
             if member.user_type == UserTypes.CLUB_OWNER:
