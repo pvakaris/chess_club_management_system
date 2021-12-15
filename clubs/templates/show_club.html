@@ -1,7 +1,7 @@
 {% extends 'base_content.html' %}
 {% block content %}
 <div class="container pt-2 pb-2">
-  <div class="row content" style="width:50%;height:750px;overflow:auto; float:left">
+  <div class="row content" style="width:50%;height:750px; float:left">
     <div class="col-xs-12 col-lg-6 col-xl-4">
       {% include 'partials/club_profile.html' %}
       {% if user_type == 1 or user_type == 2 or user_type == 3 %}
@@ -19,34 +19,9 @@
       {% include 'partials/user_profile_reduced.html' with user=user%}
     </div>
   </div>
-  <div aria-label="Page navigation" style="width:50%;height:750px;overflow:auto; float:right">
+  <div class="col-xs-12 col-lg-6 col-xl-8" style="width:50%;height:750px; float:right">
       <h1>Notice</h1>
-      {% for post in page.object_list %}
-          <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
-      {% endfor %}
-      <ul class="pagination">
-          {% if page.has_previous %}
-              <li>
-                  <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
-                      <span aria-hidden="true">Previous</span>
-                  </a>
-              </li>
-          {% endif %}
-          {% for page_number in page.paginator.page_range %}
-              {% if page_number == page.number %}
-                  <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-              {% else %}
-                  <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-              {% endif %}
-          {% endfor %}
-          {% if page.has_next %}
-              <li>
-                  <a href="?page={{ page.next_page_number }}" aria-label="Previous">
-                      <span aria-hidden="true">Next</span>
-                  </a>
-              </li>
-          {% endif %}
-    </ul>
+        {% include 'partials/posts_as_table.html' with posts=posts %}
   </div>
 </div>
 {% endblock %}
