@@ -5,7 +5,6 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from clubs.models import User, Member, Club
 from clubs.helpers import club_owner_required, staff_required
-from clubs.user_types import UserTypes
 from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
