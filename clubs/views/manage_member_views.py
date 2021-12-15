@@ -54,15 +54,10 @@ def accept_application(request, club_id, user_id):
 def decline_application(request, club_id, user_id):
     """View that declines an applicant"""
     club = Club.objects.get(id = club_id)
-    request_user = request.user
-    request_user_membership = Member.objects.get(club_membership=club, current_user=request_user)
-    if request_user_membership.user_type == UserTypes.CLUB_OWNER or request_user_membership.user_type == UserTypes.OFFICER:
-        user = User.objects.get(id = user_id)
-        Member.objects.filter(club_membership=club, current_user=user).delete()
-        messages.add_message(request, messages.WARNING, "Application declined!")
-        return redirect('manage_applicants', club_id)
-    else:
-        return redirect('feed')
+    user = User.objects.get(id = user_id)
+    Member.decline_application(user, club)
+    messages.add_message(request, messages.WARNING, "Application declined!")
+    return redirect('manage_applicants', club_id)
 
 @login_required
 @club_owner_required

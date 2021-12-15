@@ -95,6 +95,10 @@ class Member(models.Model):
             current_user=user,
             club_membership=club,
         )
+    
+    @classmethod
+    def decline_application(self, user, club):
+        Member.objects.filter(club_membership=club, current_user=user).delete()
 
 #TODO make all class methods
 
