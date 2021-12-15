@@ -26,8 +26,10 @@ def club_owner_required(view_function):
                     return view_function(request, club_id)
             else:
                 return redirect('show_club', club_id)
-        except ObjectDoesNotExist:
+        except Club.DoesNotExist:
             return redirect('feed') 
+        except  Member.DoesNotExist:
+            return redirect('show_club', club_id)
 
     return modified_view_function
 
