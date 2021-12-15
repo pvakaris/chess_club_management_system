@@ -2,7 +2,6 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
 from clubs.models import Member, Club,Post
 
 
