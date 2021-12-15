@@ -58,15 +58,11 @@ def demote_officer(request, club_id, user_id):
 def accept_application(request, club_id, user_id):
     """View that accept an applicant and make member"""
     club = Club.objects.get(id = club_id)
-    current_user = request.user
-    current_member = Member.objects.get(club_membership=club, current_user=current_user)
-    if current_member.user_type == UserTypes.CLUB_OWNER or current_member.user_type == UserTypes.OFFICER:
-        user = User.objects.get(id = user_id)
-        current_member.acceptApplicant(user, club)
-        messages.add_message(request, messages.SUCCESS, "Application accepted!")
-        return redirect('manage_applicants', club_id)
-    else:
-        return redirect('feed')
+    user = User.objects.get(id = user_id)
+    Member.acceptApplicant(user, club)
+    messages.add_message(request, messages.SUCCESS, "Application accepted!")
+    return redirect('manage_applicants', club_id)
+
 
 @login_required
 @staff_required
