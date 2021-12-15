@@ -34,14 +34,9 @@ def demote_officer(request, club_id, user_id):
     """View that demote an officer to a member"""
     club = Club.objects.get(id = club_id)
     officer_to_demote = User.objects.get(id = user_id)
-    current_user = request.user
-    current_member = Member.objects.get(club_membership=club, current_user=current_user)
-    if current_member.user_type == UserTypes.CLUB_OWNER:
-        current_member.demoteOfficer(officer_to_demote, club)
-        messages.add_message(request, messages.SUCCESS, "Officer was demoted!")
-        return redirect('manage_officers', club_id)
-    else:
-        return redirect('feed')
+    Member.demoteOfficer(officer_to_demote, club)
+    messages.add_message(request, messages.SUCCESS, "Officer was demoted!")
+    return redirect('manage_officers', club_id)
 
 @login_required
 @staff_required

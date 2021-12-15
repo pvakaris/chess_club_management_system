@@ -78,7 +78,7 @@ class Member(models.Model):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=old_club_owner).update(user_type=UserTypes.OFFICER)
         Member.objects.filter(club_membership=club, current_user=new_club_owner).update(user_type=UserTypes.CLUB_OWNER)
-
+    @classmethod
     def demoteOfficer(self, user, club):
         """Converts an member to an officer"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
