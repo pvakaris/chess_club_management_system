@@ -1,18 +1,12 @@
 """Account related views."""
-from logging import exception
-from django.conf import settings
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
-import logging
 from clubs.forms import PasswordChangingForm, UserProfileEditingForm, SignUpForm, ClubProfileEditingForm
 from django.contrib.auth.decorators import login_required
-from clubs.models import User, Member, Club,Post
+from clubs.models import Member, Club
 from clubs.helpers import login_prohibited, club_owner_required
 
 @login_required
