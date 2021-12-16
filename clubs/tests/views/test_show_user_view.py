@@ -31,7 +31,7 @@ class ShowUserTest(TestCase):
         url = reverse('show_user', kwargs={'user_id': self.user.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_user.html')
+        self.assertTemplateUsed(response, 'show_user_full.html')
         self.assertContains(response, "John Doe")
         self.assertContains(response, "johndoe@example.org")
 
