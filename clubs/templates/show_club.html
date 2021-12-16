@@ -1,52 +1,69 @@
 {% extends 'base_content.html' %}
 {% block content %}
 <div class="container pt-2 pb-2">
-  <div class="row content" style="width:50%;height:750px;overflow:auto; float:left">
-    <div class="col-xs-12 col-lg-6 col-xl-4">
-      {% include 'partials/club_profile.html' %}
-      {% if user_type == 1 or user_type == 2 or user_type == 3 %}
-        <a class="btn btn-outline-info" href="{% url 'club_members' club_id=club.id %} " role="button">Club members</a>     
-        {% if user_type == 1 or user_type == 2 %}
-          <a class="btn btn-outline-info" href="{% url 'manage_applicants' club_id=club.id %}" role="button">Manage applications</a>
+  <div style="height: 100%;width: 50%;position: fixed;top: 20px;padding-top: 20px;left: 20px;">
+
+    <div class="row content" style="width:95%; height:400px;overflow:auto; float:left;">
+      <div class="col-xs-12 col-lg-12 col-xl-12" style="position: absolute;top: 30%;left: 50%;transform: translate(-50%, -50%);text-align: center;">
+        {% include 'partials/club_profile.html' %}
+        {% if user_type == 1 or user_type == 2 or user_type == 3 %}
+          <a class="btn btn-outline-info" href="{% url 'club_members' club_id=club.id %} " role="button">Club members</a>
+          {% if user_type == 1 or user_type == 2 %}
+            <a class="btn btn-outline-info" href="{% url 'manage_applicants' club_id=club.id %}" role="button">Manage applications</a>
+          {% endif %}
+          {% if user_type == 1 %}
+            <a class="btn btn-outline-info" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
+            <a class="btn btn-outline-info" href="{% url 'edit_club' club_id=club.id %}" role="button">Manage club</a>
+            <a class="btn btn-outline-info" href="{% url 'post_messages' club_id=club.id %}" role="button">Post a message</a>
+          {% endif %}
         {% endif %}
-        {% if user_type == 1 %}
-          <a class="btn btn-outline-info" href="{% url 'manage_officers' club_id=club.id %}" role="button">Manage officers</a>
-          <a class="btn btn-outline-info" href="{% url 'edit_club' club_id=club.id %}" role="button">Manage club</a>
-          <a class="btn btn-outline-info" href="{% url 'post_messages' club_id=club.id %}" role="button">Post a message</a>        {% endif %}
-      {% endif %}
+      </div>
     </div>
-    <div class="col-xs-12 col-lg-7 col-xl-7">
-      {% include 'partials/user_profile_reduced.html' with user=user%}
-    </div>
+
   </div>
-  <div aria-label="Page navigation" style="width:50%;height:750px;overflow:auto; float:right">
-      <h1>Notice</h1>
-      {% for post in page.object_list %}
-          <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
-      {% endfor %}
-      <ul class="pagination">
-          {% if page.has_previous %}
-              <li>
-                  <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
-                      <span aria-hidden="true">Previous</span>
-                  </a>
-              </li>
-          {% endif %}
-          {% for page_number in page.paginator.page_range %}
-              {% if page_number == page.number %}
-                  <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-              {% else %}
-                  <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-              {% endif %}
+
+
+    <div style="height: 100%;width: 50%;position: fixed;top: 20px;padding-top: 20px;right:20px;">
+
+      <div class="row content" style="width:95%;height:300px;overflow:scroll; float:right;top: 20px;">
+        <div class="col-xs-12 col-lg-7 col-xl-7" style="position: absolute;top: 35%;left: 50%;transform: translate(-50%, -50%);text-align: center;">
+          {% include 'partials/user_profile_reduced.html' with user=user%}
+        </div>
+      </div>
+
+
+
+      <div style="width:95%;height:250px;overflow:auto; float:right;position: fixed;top: 530px">
+          <h1>Notice</h1>
+          {% for post in page.object_list %}
+              <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
           {% endfor %}
-          {% if page.has_next %}
-              <li>
-                  <a href="?page={{ page.next_page_number }}" aria-label="Previous">
-                      <span aria-hidden="true">Next</span>
-                  </a>
-              </li>
-          {% endif %}
-    </ul>
-  </div>
+          <ul class="pagination">
+              {% if page.has_previous %}
+                  <li>
+                      <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                          <span aria-hidden="true">Previous</span>
+                      </a>
+                  </li>
+              {% endif %}
+              {% for page_number in page.paginator.page_range %}
+                  {% if page_number == page.number %}
+                      <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                  {% else %}
+                      <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if page.has_next %}
+                  <li>
+                      <a href="?page={{ page.next_page_number }}" aria-label="Previous">
+                          <span aria-hidden="true">Next</span>
+                      </a>
+                  </li>
+              {% endif %}
+        </ul>
+      </div>
+    </div>
+
+
 </div>
 {% endblock %}

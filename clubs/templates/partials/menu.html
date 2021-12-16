@@ -7,18 +7,21 @@
     <li class="nav-item">
       <a class="nav-link" href="{% url 'club_list'%}">All clubs</a>
     </li>
+
+
     <li class="nav-item dropdown">
-      <a class="nav-link" href="#" id="user-account-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+      <a class="nav-link" href="#" id="user-account-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <span>My clubs</span>
       </a>
-      <ul class="dropdown-menu scrollable-menu" role="menu">
-        {% for member in myclubs %}
-          <tr>
-            <a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a>
-          </tr>              
+        <ul class="dropdown-menu pre-scrollable" role="menu" aria-labelledby="dropdownMenuButton" style="height:200px;overflow:auto;">
+          {% for member in myclubs %}
+            <li>
+              <a href="{% url 'show_club' member.club_membership.id %}" class="dropdown-item">{{ member.club_membership.name }}</a>
+            </li>
           {% endfor %}
-     </ul>
+        </ul>
     </li>
+
   </ul>
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item">

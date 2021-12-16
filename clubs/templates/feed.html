@@ -1,59 +1,62 @@
 {% extends 'base_content.html' %}
 {% block content %}
 <div class="container pt-2 pb-2">
-  <div class="row">
-    <div class="col-6">
-      <h1>Your clubs</h1>
-        {% if clubsCount == 0 %}
-          <p>No memberships found. &emsp13;<a href="{% url 'apply' %}" class="label link-primary pt-1">Apply for a membership now.</a></p>
-        {% else %}
-        <table class="table">
-          {% for member in myclubs %}
-            <tr>
-              <th><a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
-              {% if member.user_type == 1 %}
-                <th>Owner</th>
-              {% elif member.user_type == 2 %}
-                <th>Officer</th>
-              {% elif member.user_type == 3 %}
-                <th>Member</th>
-              {% else %}
-                <th>Applicant</th>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </table>
-        {% endif %}
+  <div aria-label="Page navigation" style="width:35%;height:600px;overflow:auto; float:left">
+    <div class="row">
+        <div class="col-12">
+          <h1>Your clubs</h1>
+            {% if clubsCount == 0 %}
+              <p>No memberships found. &emsp13;<a href="{% url 'apply' %}" class="label link-primary pt-1">Apply for a membership now.</a></p>
+            {% else %}
+            <table class="table">
+              {% for member in myclubs %}
+                <tr>
+                  <th><a href="{% url 'show_club' member.club_membership.id %}" class="label link-primary pt-1">{{ member.club_membership.name }}</a></th>
+                  {% if member.user_type == 1 %}
+                    <th>Owner</th>
+                  {% elif member.user_type == 2 %}
+                    <th>Officer</th>
+                  {% elif member.user_type == 3 %}
+                    <th>Member</th>
+                  {% else %}
+                    <th>Applicant</th>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+      </div>
     </div>
-  <div aria-label="Page navigation" style="width:50%;height:750px;overflow:auto; float:right">
-    <h1>All clubs updates</h1>
-      {% for post in page.object_list %}
-        <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
-      {% endfor %}
-        <ul class="pagination">
-            {% if page.has_previous %}
-                <li>
-                    <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">Previous</span>
-                    </a>
-                </li>
-            {% endif %}
-            {% for page_number in page.paginator.page_range %}
-                {% if page_number == page.number %}
-                    <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                {% else %}
-                    <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                {% endif %}
-            {% endfor %}
-            {% if page.has_next %}
-                <li>
-                    <a href="?page={{ page.next_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">Next</span>
-                    </a>
-                </li>
-            {% endif %}
-      </ul>
-  </div>  
+    <div aria-label="Page navigation" style="width:60%;height:600px;overflow:auto; float:right">
+      <h1>All clubs updates</h1>
+        {% for post in page.object_list %}
+          <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
+        {% endfor %}
+          <ul class="pagination">
+              {% if page.has_previous %}
+                  <li>
+                      <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                          <span aria-hidden="true">Previous</span>
+                      </a>
+                  </li>
+              {% endif %}
+              {% for page_number in page.paginator.page_range %}
+                  {% if page_number == page.number %}
+                      <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                  {% else %}
+                      <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if page.has_next %}
+                  <li>
+                      <a href="?page={{ page.next_page_number }}" aria-label="Previous">
+                          <span aria-hidden="true">Next</span>
+                      </a>
+                  </li>
+              {% endif %}
+        </ul>
+    </div>
 </div>
-  
-{% endblock %}   
+
+{% endblock %}
