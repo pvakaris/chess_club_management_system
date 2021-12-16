@@ -1,5 +1,6 @@
 """Club related views"""
 from django.conf import settings
+from django.contrib.auth import decorators
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,11 +8,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from clubs.forms import ClubCreationForm
+from clubs.helpers import valid_user_required
 from django.contrib.auth.decorators import login_required
 from clubs.models import Member, Club,Post
 from clubs.user_types import UserTypes
 from django.db.models import Q
+from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage,InvalidPage
+
 
 
 @login_required
@@ -33,13 +37,21 @@ def show_club(request, club_id):
         myclubs = Member.objects.filter(current_user = user)
         user_type = None
         try:
+            club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
             user_membership = Member.objects.get(current_user = user, club_membership = club)
             user_type = user_membership.user_type
         except ObjectDoesNotExist:
             pass
         club_owner = Member.objects.get(Q(user_type = UserTypes.CLUB_OWNER, club_membership=club))
         user = club_owner.current_user
-        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'posts':posts})
+        paginator = Paginator(posts, 10)
+        try:
+            page_number = request.GET.get('page', '1')
+            page = paginator.page(page_number)
+        except (PageNotAnInteger, EmptyPage, InvalidPage):
+            page = paginator.page(1)
+        return render(request, 'show_club.html', {'club': club, 'user_type': user_type, 'user':user, 'club_members': club_members, 'myclubs': myclubs, 'page':page})
+
 
 
 @login_required
