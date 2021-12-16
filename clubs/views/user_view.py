@@ -17,3 +17,12 @@ def show_user(request, user_id):
         return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
     else:
         return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+
+@login_required
+@valid_user_required
+def show_applicant(request, user_id):
+    """View that shows individual user details."""
+    current_user = request.user
+    members = Member.objects.filter(current_user = current_user)
+    user = User.objects.get(id=user_id)
+    return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})

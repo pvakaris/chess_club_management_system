@@ -13,7 +13,7 @@
             <td>
               <img src="{{ applicant.current_user.mini_gravatar }}" alt="Gravatar of {{ applicant.current_user.username }}" class="rounded-circle" >
             </td>
-            <td><a class="link-success" href="{% url 'show_user' user_id=applicant.current_user.id %}">{{ applicant.current_user.full_name }}</a></td>
+            <td><a class="link-success" href="{% url 'show_applicant' user_id=applicant.current_user.id %}">{{ applicant.current_user.full_name }}</a></td>
             <td><a class="btn btn-primary" href="{% url 'accept_application' user_id=applicant.current_user.id club_id=club.id %}" role="button">Accept</a></td>
             <td><a class="btn btn-primary" href="{% url 'decline_application' user_id=applicant.current_user.id club_id=club.id %}" role="button">Decline</a></td>
           </tr>

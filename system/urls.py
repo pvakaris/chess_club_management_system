@@ -25,6 +25,7 @@ urlpatterns = [
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('edit_club/<int:club_id>', views.edit_club, name='edit_club'),
     path('user/<int:user_id>', views.show_user, name='show_user'),
+    path('applicant/<int:user_id>', views.show_applicant, name='show_applicant'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
     # path('sign_up/', views.sign_up, name='sign_up'),
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),

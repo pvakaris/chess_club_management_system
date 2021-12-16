@@ -19,7 +19,12 @@ def show_club(request, club_id):
     """View that shows individual club details."""
     try:
         club = Club.objects.get(id=club_id)
-        club_members = Member.objects.filter(club_membership=club).count()
+        members = Member.objects.filter(
+            Q(user_type = UserTypes.MEMBER, club_membership=club) |
+            Q(user_type = UserTypes.OFFICER, club_membership=club) |
+            Q(user_type = UserTypes.CLUB_OWNER, club_membership=club)
+        )
+        club_members = members.count()
         posts = Post.objects.filter(club_own_id=club_id).order_by('-id')
     except ObjectDoesNotExist:
         return redirect('club_list')
