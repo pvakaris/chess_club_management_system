@@ -4,7 +4,7 @@ from clubs.models import User, Club, Member
 from clubs.tests.helpers import reverse_with_next
 from clubs.user_types import UserTypes
 
-class ShowUserTest(TestCase):
+class ClubMemberViewTest(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/user.json',
@@ -28,6 +28,17 @@ class ShowUserTest(TestCase):
 
     def test_redirects_when_not_member_of_club(self):
         self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_redirect_when_applicant_of_club(self):
+        self.client.login(username=self.user.username, password='Password123')
+        Member.objects.create(
+            user_type = UserTypes.APPLICANT,
+            current_user=self.user,
+            club_membership=self.club,
+        )
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -64,6 +75,16 @@ class ShowUserTest(TestCase):
         self.assertTemplateUsed(response, 'show_user.html')
         self.assertContains(response, "Jane Doe")
         self.assertContains(response, "janedoe@example.org")
+
+    def test_get_invalid_user_as_member_redirects(self):
+        self.client.login(username=self.target_user.username, password='Password123')
+        self.member.user_type = UserTypes.MEMBER
+        self.member.save()
+        url = reverse('club_member', kwargs={'club_id': self.club.id, 'user_id': self.target_user.id+9999})
+        response = self.client.get(url, follow=True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
 
     def test_get_user_list_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('home', self.url)

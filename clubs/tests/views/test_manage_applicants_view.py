@@ -13,6 +13,7 @@ class ManageApplicantsViewTestCase(TestCase):
         ]
 
     def setUp(self):
+        self.user = User.objects.get(username='alexjordan@example.org')
         self.applicant = User.objects.get(username='johndoe@example.org')
         self.owner = User.objects.get(username='janedoe@example.org')
         self.club = Club.objects.get(name='Club')
@@ -47,4 +48,17 @@ class ManageApplicantsViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
 
-# pagination?
+    def test_get_manage_applicants_without_having_any_membership(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'show_club.html')
+
+    def test_get_manage_applicants_of_invalid_club(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        url = reverse('manage_applicants', kwargs={'club_id': self.club.id+9999})
+        response = self.client.get(url, follow=True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')

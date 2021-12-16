@@ -33,6 +33,14 @@ class ManageOfficersViewTestCase(TestCase):
     def test_manage_officers_url(self):
         self.assertEqual(self.url, '/manage_officers/1')
 
+    def test_get_manage_officers_with_invalid_id(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        url = reverse('club_members', kwargs={'club_id': self.club.id+9999})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
+
     def test_get_manage_officers(self):
         self.client.login(username=self.owner.username, password='Password123')
         response = self.client.get(self.url)
@@ -46,5 +54,3 @@ class ManageOfficersViewTestCase(TestCase):
         redirect_url = reverse_with_next('home', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'home.html')
-
-# pagination?

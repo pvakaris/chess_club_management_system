@@ -39,9 +39,9 @@ class ShowUserTest(TestCase):
         self.client.login(username=self.user.username, password='Password123')
         url = reverse('show_user', kwargs={'user_id': self.user.id+9999})
         response = self.client.get(url, follow=True)
-        response_url = reverse('member_list')
+        response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'member_list.html')
+        self.assertTemplateUsed(response, 'feed.html')
 
     def test_get_show_user_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('home', self.url)

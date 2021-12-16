@@ -46,9 +46,12 @@ class PromoteMemberViewTestCase(TestCase):
     def test_successful_promote_member(self):
         self.client.login(username=self.owner.username, password='Password123')
         member_count_before = Member.objects.filter(user_type=UserTypes.MEMBER).count()
+        officer_count_before = Member.objects.filter(user_type=UserTypes.OFFICER).count()
         response = self.client.get(self.url, follow=True)
         member_count_after = Member.objects.filter(user_type=UserTypes.MEMBER).count()
+        officer_count_after = Member.objects.filter(user_type=UserTypes.OFFICER).count()
         self.assertEqual(member_count_before, member_count_after+1)
+        self.assertEqual(officer_count_before+1, officer_count_after)
         redirect_url = reverse('club_members', kwargs={'club_id':f'{self.club.id}'})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'club_member_list.html')
@@ -65,6 +68,20 @@ class PromoteMemberViewTestCase(TestCase):
     def test_promote_member_without_owner_permission(self):
         self.client.login(username=self.officer.username, password='Password123')
         officer_count_before = Member.objects.filter(user_type=UserTypes.OFFICER).count()
+        response = self.client.get(self.url, follow=True)
+        officer_count_after = Member.objects.filter(user_type=UserTypes.OFFICER).count()
+        self.assertEqual(officer_count_before, officer_count_after)
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_invalid_id_for_promote_member_redirects(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        officer_count_before = Member.objects.filter(user_type=UserTypes.OFFICER).count()
+        self.url = reverse('accept_application', kwargs={
+            'club_id': self.club.id,
+            'user_id': self.member.id+9999
+        })
         response = self.client.get(self.url, follow=True)
         officer_count_after = Member.objects.filter(user_type=UserTypes.OFFICER).count()
         self.assertEqual(officer_count_before, officer_count_after)

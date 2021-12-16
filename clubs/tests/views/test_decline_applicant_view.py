@@ -72,3 +72,17 @@ class DeclineApplicantViewTestCase(TestCase):
         redirect_url = reverse('show_club', kwargs={'club_id':f'{self.club.id}'})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_club.html')
+
+    def test_get_invalid_id_for_decline_application_redirects(self):
+        self.client.login(username=self.owner.username, password='Password123')
+        member_count_before = Member.objects.filter(user_type=UserTypes.MEMBER).count()
+        self.url = reverse('accept_application', kwargs={
+            'club_id': self.club.id,
+            'user_id': self.applicant.id+9999
+        })
+        response = self.client.get(self.url, follow=True)
+        member_count_after = Member.objects.filter(user_type=UserTypes.MEMBER).count()
+        self.assertEqual(member_count_before, member_count_after)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
