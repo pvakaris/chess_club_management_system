@@ -1,1 +1,1 @@
-web: gunicorn clucker.wsgi
+web: gunicorn system.wsgi
