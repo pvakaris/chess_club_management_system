@@ -137,7 +137,10 @@ def show_user(request, user_id):
     except ObjectDoesNotExist:
         return redirect('member_list')
     else:
-        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+        if current_user.id == user.id:
+            return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
+        else:
+            return render(request, 'show_user.html', {'user': user, 'myclubs':members})
 
 
 

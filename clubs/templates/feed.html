@@ -1,10 +1,11 @@
 {% extends 'base_content.html' %}
 {% block content %}
 <div class="container pt-2 pb-2">
-  <div aria-label="Page navigation" style="width:35%;height:600px;overflow:auto; float:left">
-    <div class="row">
-        <div class="col-12">
+    <div class="row" style="height:60%;">
+
+        <div class="col">
           <h1>Your clubs</h1>
+          <div style="height:50%;width:90%;overflow:auto;">
             {% if clubsCount == 0 %}
               <p>No memberships found. &emsp13;<a href="{% url 'apply' %}" class="label link-primary pt-1">Apply for a membership now.</a></p>
             {% else %}
@@ -27,35 +28,39 @@
             {% endif %}
         </div>
       </div>
-    </div>
-    <div aria-label="Page navigation" style="width:60%;height:600px;overflow:auto; float:right">
-      <h1>All clubs updates</h1>
-        {% for post in page.object_list %}
-          <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
-        {% endfor %}
-          <ul class="pagination">
-              {% if page.has_previous %}
-                  <li>
-                      <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
-                          <span aria-hidden="true">Previous</span>
-                      </a>
-                  </li>
-              {% endif %}
-              {% for page_number in page.paginator.page_range %}
-                  {% if page_number == page.number %}
-                      <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                  {% else %}
-                      <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                  {% endif %}
-              {% endfor %}
-              {% if page.has_next %}
-                  <li>
-                      <a href="?page={{ page.next_page_number }}" aria-label="Previous">
-                          <span aria-hidden="true">Next</span>
-                      </a>
-                  </li>
-              {% endif %}
-        </ul>
+
+      <div class="col" style="float:right">
+        <h1>Posts from all clubs</h1>
+        <div style="height:50%;overflow:auto;">
+          {% for post in page.object_list %}
+            <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
+          {% endfor %}
+            <ul class="pagination">
+                {% if page.has_previous %}
+                    <li>
+                        <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">Previous</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for page_number in page.paginator.page_range %}
+                    {% if page_number == page.number %}
+                        <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                    {% else %}
+                        <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page.has_next %}
+                    <li>
+                        <a href="?page={{ page.next_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">Next</span>
+                        </a>
+                    </li>
+                {% endif %}
+              </ul>
+          </div>
+        </div>
+
     </div>
 </div>
 

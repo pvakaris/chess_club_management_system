@@ -1,10 +1,9 @@
 {% extends 'base_content.html' %}
 {% block content %}
 <div class="container pt-2 pb-2">
-  <div style="height: 100%;width: 50%;position: fixed;top: 20px;padding-top: 20px;left: 20px;">
+  <div class="row" style="height:60%;">
 
-    <div class="row content" style="width:95%; height:400px;overflow:auto; float:left;">
-      <div class="col-xs-12 col-lg-12 col-xl-12" style="position: absolute;top: 30%;left: 50%;transform: translate(-50%, -50%);text-align: center;">
+      <div class="col" style="height:50%;overflow:auto;text-align: center;">
         {% include 'partials/club_profile.html' %}
         {% if user_type == 1 or user_type == 2 or user_type == 3 %}
           <a class="btn btn-outline-info" href="{% url 'club_members' club_id=club.id %} " role="button">Club members</a>
@@ -18,52 +17,49 @@
           {% endif %}
         {% endif %}
       </div>
+
+      <div class="col" style="height:50%;text-align: justify;">
+        {% include 'partials/user_profile_reduced.html' with user=user%}
+      </div>
+
     </div>
 
-  </div>
+    <div class="row" style="height:35%;">
 
-
-    <div style="height: 100%;width: 50%;position: fixed;top: 20px;padding-top: 20px;right:20px;">
-
-      <div class="row content" style="width:95%;height:300px;overflow:scroll; float:right;top: 20px;">
-        <div class="col-xs-12 col-lg-7 col-xl-7" style="position: absolute;top: 35%;left: 50%;transform: translate(-50%, -50%);text-align: center;">
-          {% include 'partials/user_profile_reduced.html' with user=user%}
+      <div class="col"></div>
+      <div class="col">
+          <h1>Posts by the club owner</h1>
+          <div style="height:35%;overflow:auto;">
+            {% for post in page.object_list %}
+                <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
+            {% endfor %}
+            <ul class="pagination">
+                {% if page.has_previous %}
+                    <li>
+                        <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">Previous</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for page_number in page.paginator.page_range %}
+                    {% if page_number == page.number %}
+                        <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                    {% else %}
+                        <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page.has_next %}
+                    <li>
+                        <a href="?page={{ page.next_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">Next</span>
+                        </a>
+                    </li>
+                {% endif %}
+              </ul>
+          </div>
         </div>
-      </div>
 
-
-
-      <div style="width:95%;height:250px;overflow:auto; float:right;position: fixed;top: 530px">
-          <h1>Notice</h1>
-          {% for post in page.object_list %}
-              <table class="table">{% include 'partials/post_as_table_row.html' with posts=posts %}</table>
-          {% endfor %}
-          <ul class="pagination">
-              {% if page.has_previous %}
-                  <li>
-                      <a href="?page={{ page.previous_page_number }}" aria-label="Previous">
-                          <span aria-hidden="true">Previous</span>
-                      </a>
-                  </li>
-              {% endif %}
-              {% for page_number in page.paginator.page_range %}
-                  {% if page_number == page.number %}
-                      <li class="active"><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                  {% else %}
-                      <li><a href="?page={{ page_number }}">&nbsp;{{ page_number }}&nbsp;</a></li>
-                  {% endif %}
-              {% endfor %}
-              {% if page.has_next %}
-                  <li>
-                      <a href="?page={{ page.next_page_number }}" aria-label="Previous">
-                          <span aria-hidden="true">Next</span>
-                      </a>
-                  </li>
-              {% endif %}
-        </ul>
-      </div>
     </div>
-
 
 </div>
 {% endblock %}
