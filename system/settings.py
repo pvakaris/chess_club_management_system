@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
-import django_heroku
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +28,11 @@ SECRET_KEY = 'django-insecure-2@dv!r%*_^tovdo*cf0=9hxgl=xq=eer%8am&f)5ah8sz(q&^9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+    'pure-dusk-67366.herokuapp.com',
+    '127.0.0.1'
+]
 
 
 # Application definition
@@ -159,5 +163,6 @@ MESSAGE_TAGS = {
 }
 
 # Activate django heroku
-if 'HEROKU' in os.environ:
+if '/app' in os.environ['HOME']:
+    import django_heroku
     django_heroku.settings(locals())
