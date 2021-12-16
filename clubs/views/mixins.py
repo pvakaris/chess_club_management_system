@@ -27,29 +27,3 @@ class LoginProhibitedMixin:
             )
         else:
             return self.redirect_when_logged_in_url
-
-class ClubOwnerRequiredMixin:
-    """Mixin that redirects when a user is not the club owner"""
-
-    redirect_when_not_club_owner_url = None
-
-    def dispatch(self, *args, **kwargs):
-        """Redirect when not a club owner, or dispatch as normal otherwise."""
-        if self.request.user.user_type != UserTypes.OWNER:
-            return self.handle_not_club_owner(*args, **kwargs)
-        return super().dispatch(*args, **kwargs)
-
-    def handle_not_club_owner(self, *args, **kwargs):
-        url = self.get_redirect_when_not_club_owner_url()
-        return redirect(url)
-
-    def get_redirect_when_not_club_owner_url(self):
-        """Returns the url to redirect to when not logged in."""
-        if self.redirect_when_not_club_owner_url is None:
-            raise ImproperlyConfigured(
-                "ClubOwnerRequiredMixin requires either a value for "
-                "'redirect_when_not_club_owner_url', or an implementation for "
-                "'get_redirect_when_not_club_owner_url()'."
-            )
-        else:
-            return self.redirect_when_not_club_owner_url

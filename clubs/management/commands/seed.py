@@ -7,8 +7,8 @@ from clubs.user_types import UserTypes
 
 class Command(BaseCommand):
     PASSWORD = "Password123"
-    USER_COUNT = 5
-    CLUB_COUNT = 3    
+    USER_COUNT = 150
+    CLUB_COUNT = 5
 
     def __init__(self):
         super().__init__()
@@ -21,13 +21,7 @@ class Command(BaseCommand):
         self.create_clubs()
         self.create_members() 
 
-        #! populate required users in diverse clubs
-
-        members = Member.objects.filter(user_type=UserTypes.CLUB_OWNER).count()
-        print(f'there are: {members} club owners')
-        print(f'there are: {Club.objects.count()} clubs')
-        print(f'there are: {Member.objects.count()} members')
-        print('seeding complete')
+        print('Seeding complete')
     
     def create_users(self):
         """Populate database with users"""
@@ -39,6 +33,7 @@ class Command(BaseCommand):
             except (IntegrityError):
                 continue
             user_count += 1
+        print()
 
     def create_clubs(self):
         """Populate database with clubs"""
@@ -50,6 +45,7 @@ class Command(BaseCommand):
             except (IntegrityError):
                 continue
             club_count += 1
+        print()
 
     def create_members(self):
         """Populate database with members"""
@@ -61,10 +57,10 @@ class Command(BaseCommand):
             try:
                 rand = random.randint(0,Command.CLUB_COUNT-1)
                 self._create_member(users[member_count], clubs[rand])
-                #! need to add another member with same user of different club 
             except (IntegrityError):
                 continue
             member_count += 1
+        print()
 
     def _create_user(self):
         """Create a random user"""
@@ -94,8 +90,7 @@ class Command(BaseCommand):
     def _create_member(self, user, club):
         """Create a random member"""
         options = list(map(int ,UserTypes))
-        user_type = random.choices(options, cum_weights=(0, 0.2, 0.4, 0.4), k=1)  # self.faker.random_int(2,4)
-        print(user_type)
+        user_type = random.choices(options, cum_weights=(0, 0.2, 0.4, 0.4), k=1)
         Member.objects.create(
             user_type = user_type[0]+1,
             current_user=user,
