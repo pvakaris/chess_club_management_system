@@ -159,4 +159,5 @@ MESSAGE_TAGS = {
 }
 
 # Activate django heroku
-django_heroku.settings(locals())
+if 'HEROKU' in os.environ:
+    django_heroku.settings(locals())
