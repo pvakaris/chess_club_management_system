@@ -13,4 +13,7 @@ def show_user(request, user_id):
     current_user = request.user
     members = Member.objects.filter(current_user = current_user)
     user = User.objects.get(id=user_id)
-    return render(request, 'show_user.html', {'user': user, 'myclubs':members})
+    if user.id == current_user.id:
+        return render(request, 'show_user_full.html', {'user': user, 'myclubs':members})
+    else:
+        return render(request, 'show_user.html', {'user': user, 'myclubs':members})
