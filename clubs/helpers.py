@@ -15,6 +15,7 @@ def login_prohibited(view_function):
 
 
 def valid_user_required(view_function):
+    """The target user must exist"""
     def modified_view_function(request,  user_id, club_id=None):
         try:
             User.objects.get(id=user_id)
@@ -28,6 +29,7 @@ def valid_user_required(view_function):
 
 
 def club_owner_required(view_function):
+    """Must be an owner of the specified club"""
     def modified_view_function(request, club_id, user_id=None):
         try:
             user = request.user
@@ -41,13 +43,14 @@ def club_owner_required(view_function):
             else:
                 return redirect('show_club', club_id)
         except Club.DoesNotExist:
-            return redirect('feed') 
+            return redirect('feed')
         except  Member.DoesNotExist:
             return redirect('show_club', club_id)
 
     return modified_view_function
 
 def staff_required(view_function):
+    """Must be an officer or owner of the specified club"""
     def modified_view_function(request, club_id, user_id=None):
         user = request.user
         try:
@@ -61,12 +64,13 @@ def staff_required(view_function):
             else:
                 return redirect('show_club', club_id)
         except Club.DoesNotExist:
-            return redirect('feed') 
+            return redirect('feed')
         except  Member.DoesNotExist:
-            return redirect('show_club', club_id)  
+            return redirect('show_club', club_id)
     return modified_view_function
 
 def member_required(view_function):
+    """Must be a member, officer or owner of the specified club"""
     def modified_view_function(request, club_id, user_id=None):
         user = request.user
         try:
@@ -80,7 +84,7 @@ def member_required(view_function):
             else:
                 return redirect('show_club', club_id)
         except Club.DoesNotExist:
-            return redirect('feed') 
+            return redirect('feed')
         except  Member.DoesNotExist:
             return redirect('show_club', club_id)
     return modified_view_function

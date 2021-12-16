@@ -73,30 +73,32 @@ class Member(models.Model):
 
     @classmethod
     def transferOwnership(self, new_club_owner, old_club_owner, club):
-        """Converts an member to an officer"""
+        """Converts an officer to an owner and the owner to an officer"""
         Member.objects.filter(club_membership=club, current_user=old_club_owner).update(user_type=UserTypes.OFFICER)
         Member.objects.filter(club_membership=club, current_user=new_club_owner).update(user_type=UserTypes.CLUB_OWNER)
-    
+
     @classmethod
     def demoteOfficer(self, user, club):
-        """Converts an member to an officer"""
+        """Converts an officer to a member"""
         Member.objects.filter(club_membership=club, current_user=user).update(user_type=UserTypes.MEMBER)
 
     @classmethod
     def kickOutMember(self, user, club):
-        """Kicks a member out from a club"""
+        """Kicks a member out from a club including officers"""
         Member.objects.filter(club_membership=club, current_user=user).delete()
 
     @classmethod
     def applyClub(self, user, club):
+        """Creates a membership object linked to the selected club as an applicant"""
         Member.objects.create(
             user_type = UserTypes.APPLICANT,
             current_user=user,
             club_membership=club,
         )
-    
+
     @classmethod
     def decline_application(self, user, club):
+        """Deletes a member object of type applicant"""
         Member.objects.filter(club_membership=club, current_user=user).delete()
 
 #TODO make all class methods
