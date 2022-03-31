@@ -2,8 +2,7 @@
 The members of the team are:
 - Elisabeth Halvorsen
 - Vakaris Paulavičius
-- Anna Lenkovska
-- Chang Chen
+- Chang Chen 
 - Ojebo Adoh
 
 ## Project structure
